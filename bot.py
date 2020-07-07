@@ -30,7 +30,7 @@ async def on_ready():
 
 
 
-intital_extensions = ['cogs.moderation']
+intital_extensions = ['cogs.moderation', 'cogs.ws_planning']
 
 if __name__ == '__main__':
     for extension in intital_extensions:
