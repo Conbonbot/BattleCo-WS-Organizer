@@ -1,12 +1,10 @@
 import os
 import random
 from dotenv import load_dotenv
-import numpy as np
 import sqlite3
 import datetime
 from discord.ext import commands
 import discord
-from numpy.lib.function_base import append
 
 class BattleCoCogs(commands.Cog, name='BattleCo'):
 
