@@ -150,11 +150,11 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
             description = 'WS Setup Commands',
             colour = discord.Colour.green()
         )
-        ws_embed.set_footer(text='Example: !ws add battleship battery10 omega8 teleport7 repair7 time_warp8 alpha_rocket6 \nExample: !ws show miner')
+        ws_embed.set_footer(text='Example: !ws add bs battery10 omega8 teleport7 repair7 time_warp8 alpha_rocket6 \nExample: !ws show miner')
         ws_embed.set_author(name=ctx.author)
-        ws_embed.add_field(name='Add Ship', value='!ws add', inline=True)
-        ws_embed.add_field(name='Show Ship', value='!ws show', inline=True)
-        ws_embed.add_field(name='Delete Ship', value='!ws delete', inline=True)
+        ws_embed.add_field(name='Add Ship', value='!ws add bs (example)', inline=True)
+        ws_embed.add_field(name='Show Ship', value='!ws show miner (example)', inline=True)
+        ws_embed.add_field(name='Delete Ship', value='!ws delete ts (example)', inline=True)
         ws_embed.add_field(name='Next Steps', value='for adding (use can use the add command to edit your ships) ships, add the mods listed on your ship, but for show and delete, just enter the name of the ship you want to see/delete', inline=False)
         await ctx.send(embed=ws_embed)
         
@@ -180,7 +180,7 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
             val = (user_name, user_nickname)
         cursor.execute(sql, val)
         # Adding a Battleship
-        if(tag == 'battleship'):
+        if(tag == 'bs'):
             sql = "SELECT battleship FROM main WHERE nickname=?"
             cursor.execute(sql, [(ctx.author.name)])
             result = cursor.fetchall()
@@ -204,7 +204,7 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
                 await ctx.send("Invalid Options")
             cursor.execute(sql,val)
         # Adding a Transport
-        elif(tag == 'transport'):
+        elif(tag == 'ts'):
             sql = "SELECT transport FROM main WHERE nickname=?"
             cursor.execute(sql, [(ctx.author.name)])
             result = cursor.fetchall()
@@ -236,7 +236,7 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
     async def show(self, ctx, tag):
         db = sqlite3.connect('main.sqlite')
         cursor = db.cursor()
-        if (tag == 'battleship'):
+        if (tag == 'bs'):
             bs_sql = "SELECT battleship FROM main WHERE nickname=?"
             cursor.execute(bs_sql, [(ctx.author.name)])
             bs_data_raw = cursor.fetchall()
@@ -283,7 +283,7 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
             embed.add_field(name='Miner', value=f'{miner_data}', inline=False)
 
             await ctx.send(embed=embed)
-        elif(tag == 'transport'):
+        elif(tag == 'ts'):
             ts_sql = "SELECT transport FROM main WHERE nickname=?"
             cursor.execute(ts_sql, [(ctx.author.name)])
             ts_data_raw = cursor.fetchall()
@@ -318,13 +318,27 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
     async def delete(self, ctx, tag):
         db = sqlite3.connect('main.sqlite')
         cursor = db.cursor()
-        if (tag == 'battleship'):
+        if (tag == 'bs'):
             bs_sql = "SELECT battleship FROM main WHERE nickname=?"
             cursor.execute(bs_sql, [(ctx.author.name)])
             sql = "UPDATE main SET battleship = ? WHERE nickname = ?"
             val = (None, ctx.author.name)
             cursor.execute(sql, val)
             await ctx.send("Battleship deleted")
+        if (tag == 'miner'):
+            miner_sql = "SELECT miner FROM main WHERE nickname=?"
+            cursor.execute(miner_sql, [(ctx.author.name)])
+            sql = "UPDATE main SET miner = ? WHERE nickname = ?"
+            val = (None, ctx.author.name)
+            cursor.execute(sql, val)
+            await ctx.send("Miner deleted")
+        if (tag == 'ts'):
+            ts_sql = "SELECT transport FROM main WHERE nickname=?"
+            cursor.execute(ts_sql, [(ctx.author.name)])
+            sql = "UPDATE main SET transport = ? WHERE nickname = ?"
+            val = (None, ctx.author.name)
+            cursor.execute(sql, val)
+            await ctx.send("Transport deleted")
         db.commit()
         cursor.close()
         db.close()
