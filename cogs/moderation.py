@@ -150,7 +150,7 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
             description = 'WS Setup Commands',
             colour = discord.Colour.green()
         )
-        ws_embed.set_footer(text='Example: !ws add battleship battery10 omega8 teleport7 repair7 emp8 rocket6 \nExample: !ws show miner')
+        ws_embed.set_footer(text='Example: !ws add battleship battery10 omega8 teleport7 repair7 time_warp8 alpha_rocket6 \nExample: !ws show miner')
         ws_embed.set_author(name=ctx.author)
         ws_embed.add_field(name='Add Ship', value='!ws add', inline=True)
         ws_embed.add_field(name='Show Ship', value='!ws show', inline=True)
@@ -346,7 +346,7 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
         cursor.close()
         db.close()
 
-        await ctx.send("Question is stored to database")
+        await ctx.send("Question has been stored to database")
 
 def setup(bot):
     bot.add_cog(BattleCoCogs(bot))
