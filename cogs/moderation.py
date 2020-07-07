@@ -12,16 +12,10 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
         self.bot = bot
 
 
-    # Clear
-    @commands.command(help="Clears text (admin only)")
-    @commands.has_role('admin')
-    async def clear(self, ctx, amount=5):
-        await ctx.channel.purge(limit=amount)
-
-
     # Ships
     @commands.command(help="Displays your current ships")
     async def ships(self, ctx):
+        print(ctx.author.name, " has typed the !ships command")
         db = sqlite3.connect('main.sqlite')
         cursor = db.cursor()
         bs_sql = "SELECT battleship FROM main WHERE nickname=?"
@@ -78,6 +72,7 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
     # Finds a players ships
     @commands.command(help="Finds a players ships based off their name (ping the user)")
     async def find_ship(self, ctx, player):
+        print(ctx.author.name, " has typed the !find_ship command")
         player = player.replace('!', '')
         db = sqlite3.connect('main.sqlite')
         cursor = db.cursor()
@@ -149,6 +144,7 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
 
     @commands.group(invoke_without_command=True, help="Add, edit, show, and delete ships, type !ws for more details")
     async def ws(self, ctx):
+        print(ctx.author.name, " has typed the !ws command")
         ws_embed = discord.Embed(
             title = 'BattleCo WS Organizer',
             description = 'WS Setup Commands',
