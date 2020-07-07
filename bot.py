@@ -7,7 +7,7 @@ from discord.ext import commands
 import discord
 import asyncio
 import sys
-
+import requests
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')

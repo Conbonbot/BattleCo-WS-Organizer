@@ -5,6 +5,7 @@ import sqlite3
 import datetime
 from discord.ext import commands
 import discord
+import requests
 
 class BattleCoCogs(commands.Cog, name='BattleCo'):
 
@@ -361,6 +362,21 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
         db.close()
 
         await ctx.send("Question has been stored to database")
+
+    @commands.command()
+    async def test_api(self, ctx):
+        # REMEMBER this api key is for the BWO server, NOT the BattleCo Server (talk to Wolfsquad)
+        #default_api_request = requests.get('https://bot.hs-compendium.com/compendium/api/tech?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzODQ0ODExNTE0NzUxMjIxNzkiLCJndWlsZElkIjoiNzI3MjAxNDQwMzE3MTc3OTA3IiwiaWF0IjoxNTk0MTU2NzU5LCJleHAiOjE2MjU3MTQzNTksInN1YiI6ImFwaSJ9.EkVbCJT8cEOlnEWuoxt218shQpLiJNgdWQZQABZFcxo&userid=')
+        user_id_raw = ctx.author.mention
+        user_id = str(user_id_raw).strip('<>')
+        user_id = user_id[1:]
+        api_request_str = 'https://bot.hs-compendium.com/compendium/api/tech?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzODQ0ODExNTE0NzUxMjIxNzkiLCJndWlsZElkIjoiNzI3MjAxNDQwMzE3MTc3OTA3IiwiaWF0IjoxNTk0MTU2NzU5LCJleHAiOjE2MjU3MTQzNTksInN1YiI6ImFwaSJ9.EkVbCJT8cEOlnEWuoxt218shQpLiJNgdWQZQABZFcxo' + user_id
+        print(api_request_str)
+        api_request = requests.get(api_request_str)
+        print(api_request.headers)
+        print(api_request.text)
+
+        
 
 def setup(bot):
     bot.add_cog(BattleCoCogs(bot))
