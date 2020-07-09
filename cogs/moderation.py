@@ -364,17 +364,21 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
         await ctx.send("Question has been stored to database")
 
     @commands.command()
-    async def test_api(self, ctx):
-        # REMEMBER this api key is for the BWO server, NOT the BattleCo Server (talk to Wolfsquad)
-        #default_api_request = requests.get('https://bot.hs-compendium.com/compendium/api/tech?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzODQ0ODExNTE0NzUxMjIxNzkiLCJndWlsZElkIjoiNzI3MjAxNDQwMzE3MTc3OTA3IiwiaWF0IjoxNTk0MTU2NzU5LCJleHAiOjE2MjU3MTQzNTksInN1YiI6ImFwaSJ9.EkVbCJT8cEOlnEWuoxt218shQpLiJNgdWQZQABZFcxo&userid=')
+    async def test_api(self, ctx, message):
         user_id_raw = ctx.author.mention
         user_id = str(user_id_raw).strip('<>')
         user_id = user_id[1:]
-        api_request_str = 'https://bot.hs-compendium.com/compendium/api/tech?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzODQ0ODExNTE0NzUxMjIxNzkiLCJndWlsZElkIjoiNzI3MjAxNDQwMzE3MTc3OTA3IiwiaWF0IjoxNTk0MTU2NzU5LCJleHAiOjE2MjU3MTQzNTksInN1YiI6ImFwaSJ9.EkVbCJT8cEOlnEWuoxt218shQpLiJNgdWQZQABZFcxo' + user_id
-        print(api_request_str)
+        api_request_str = 'https://bot.hs-compendium.com/compendium/api/tech?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzODQ0ODExNTE0NzUxMjIxNzkiLCJndWlsZElkIjoiMzkzMTQ5NjIxNDYwOTI2NDY0IiwiaWF0IjoxNTk0MjYzMDU2LCJleHAiOjE2MjU4MjA2NTYsInN1YiI6ImFwaSJ9.pokmGiqTNIz0VztPrXhvM_xofWzuOYO1DSA2zTwP01s&userid=' + user_id
+        #print(api_request_str)
         api_request = requests.get(api_request_str)
-        print(api_request.headers)
         print(api_request.text)
+        text_api = str(api_request.text)
+        print(text_api.find(message))
+        if text_api.find(message) is not -1:
+            print(text_api[text_api.find(message):][:text_api[text_api.find(message):].index('}')+1])
+            await ctx.send(text_api[text_api.find(message):][:text_api[text_api.find(message):].index('}')+1])
+            
+
 
         
 
@@ -382,3 +386,5 @@ def setup(bot):
     bot.add_cog(BattleCoCogs(bot))
     print('BattleCo is loaded')
 
+# example api_request.text
+#{"tokenExpires":1625820656,"tz_name":"America/Los_Angeles","tz_offset":-420,"map":{"rs":{"level":7,"ws":0},"shipmentrelay":{"level":5,"ws":0},"corplevel":{"level":7,"ws":0},"transp":{"level":5,"ws":2000},"miner":{"level":5,"ws":4000},"bs":{"level":5,"ws":7000},"cargobay":{"level":8,"ws":625},"computer":{"level":4,"ws":0},"rush":{"level":3,"ws":0},"tradeburst":{"level":4,"ws":0},"shipdrone":{"level":1,"ws":0},"miningboost":{"level":4,"ws":62},"hydrobay":{"level":2,"ws":25},"enrich":{"level":3,"ws":75},"remote":{"level":5,"ws":125},"hydroupload":{"level":2,"ws":0},"genesis":{"level":1,"ws":25},"battery":{"level":10,"ws":1000},"laser":{"level":3,"ws":75},"mass":{"level":2,"ws":25},"dual":{"level":7,"ws":500},"barrage":{"level":2,"ws":25},"alpha":{"level":1,"ws":0},"delta":{"level":1,"ws":0},"passive":{"level":2,"ws":25},"omega":{"level":8,"ws":625},"mirror":{"level":5,"ws":250},"blast":{"level":5,"ws":700},"emp":{"level":8,"ws":625},"teleport":{"level":7,"ws":500},"rsextender":{"level":6,"ws":0},"repair":{"level":7,"ws":500},"warp":{"level":7,"ws":500},"sanctuary":{"level":1,"ws":0},"fortify":{"level":3,"ws":37},"rocket":{"level":6,"ws":625},"salvage":{"level":6,"ws":187},"suppress":{"level":2,"ws":12},"barrier":{"level":4,"ws":125}},"array":[{"type":"rs","level":7,"ws":0},{"type":"shipmentrelay","level":5,"ws":0},{"type":"corplevel","level":7,"ws":0},{"type":"transp","level":5,"ws":2000},{"type":"miner","level":5,"ws":4000},{"type":"bs","level":5,"ws":7000},{"type":"cargobay","level":8,"ws":625},{"type":"computer","level":4,"ws":0},{"type":"rush","level":3,"ws":0},{"type":"tradeburst","level":4,"ws":0},{"type":"shipdrone","level":1,"ws":0},{"type":"miningboost","level":4,"ws":62},{"type":"hydrobay","level":2,"ws":25},{"type":"enrich","level":3,"ws":75},{"type":"remote","level":5,"ws":125},{"type":"hydroupload","level":2,"ws":0},{"type":"genesis","level":1,"ws":25},{"type":"battery","level":10,"ws":1000},{"type":"laser","level":3,"ws":75},{"type":"mass","level":2,"ws":25},{"type":"dual","level":7,"ws":500},{"type":"barrage","level":2,"ws":25},{"type":"alpha","level":1,"ws":0},{"type":"delta","level":1,"ws":0},{"type":"passive","level":2,"ws":25},{"type":"omega","level":8,"ws":625},{"type":"mirror","level":5,"ws":250},{"type":"blast","level":5,"ws":700},{"type":"emp","level":8,"ws":625},{"type":"teleport","level":7,"ws":500},{"type":"rsextender","level":6,"ws":0},{"type":"repair","level":7,"ws":500},{"type":"warp","level":7,"ws":500},{"type":"sanctuary","level":1,"ws":0},{"type":"fortify","level":3,"ws":37},{"type":"rocket","level":6,"ws":625},{"type":"salvage","level":6,"ws":187},{"type":"suppress","level":2,"ws":12},{"type":"barrier","level":4,"ws":125}]}
