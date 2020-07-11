@@ -17,12 +17,13 @@ bot = commands.Bot(command_prefix='!')
 # Ready
 @bot.event
 async def on_ready():
-    #db = sqlite3.connect('questions.sqlite')
+    #db = sqlite3.connect('roster.sqlite')
     #cursor = db.cursor()
     #cursor.execute('''
     #    CREATE TABLE IF NOT EXISTS main(
-    #        questions TEXT,
-    #       nickname TEXT
+    #        name TEXT,
+    #        nickname TEXT,
+    #        roster TEXT
     #    )
     #''')
     print(f'{bot.user.name} has connected to Discord!')

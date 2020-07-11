@@ -322,22 +322,25 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
         if (tag == 'bs'):
             bs_sql = "SELECT battleship FROM main WHERE nickname=?"
             cursor.execute(bs_sql, [(ctx.author.name)])
-            sql = "UPDATE main SET battleship = ? WHERE nickname = ?"
-            val = (None, ctx.author.name)
+            result = cursor.fetchone()
+            sql = "DELETE FROM main WHERE battleship = ? AND nickname = ?"
+            val = (result, ctx.author.name)
             cursor.execute(sql, val)
             await ctx.send("Battleship deleted")
         if (tag == 'miner'):
             miner_sql = "SELECT miner FROM main WHERE nickname=?"
             cursor.execute(miner_sql, [(ctx.author.name)])
-            sql = "UPDATE main SET miner = ? WHERE nickname = ?"
-            val = (None, ctx.author.name)
+            result = cursor.fetchone()
+            sql = "DELETE FROM main WHERE miner = ? AND nickname = ?"
+            val = (result, ctx.author.name)
             cursor.execute(sql, val)
             await ctx.send("Miner deleted")
         if (tag == 'ts'):
             ts_sql = "SELECT transport FROM main WHERE nickname=?"
             cursor.execute(ts_sql, [(ctx.author.name)])
-            sql = "UPDATE main SET transport = ? WHERE nickname = ?"
-            val = (None, ctx.author.name)
+            result = cursor.fetchone()
+            sql = "DELETE FROM main WHERE transport = ? AND nickname = ?"
+            val = (result, ctx.author.name)
             cursor.execute(sql, val)
             await ctx.send("Transport deleted")
         db.commit()

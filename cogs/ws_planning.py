@@ -12,9 +12,81 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
     def __init__(self, bot):
         self.bot = bot
     
-    @commands.group(invoke_without_command=True, help="Plan the next WS with a roster")
-    async def roster(self, ctx):
-        await ctx.send("Test command")
+    @commands.command(aliases=['in'])
+    async def _in(self, ctx, message):
+        if (message == '1') or (message == '2'):
+            db = sqlite3.connect('roster.sqlite')
+            cursor = db.cursor()
+            sql = "SELECT nickname FROM main WHERE nickname=?"
+            cursor.execute(sql, [(ctx.author.name)])
+            result = cursor.fetchall()
+            user_name = ctx.author.mention
+            user_nickname = ctx.author.name
+            if len(result) == 0:
+                sql = ("INSERT INTO main(name, nickname, roster) VALUES(?,?,?)")
+                val = (user_name, user_nickname, message)
+                await ctx.send(f"You are signed up for WS Roster #{message}")
+            else:
+                await ctx.send("You are already in a WS Roster, type !out to leave your current WS Roster")
+            cursor.execute(sql, val)
+            db.commit()
+            cursor.close()
+            db.close()
+        else:
+            await ctx.send("Invalid roster selection, it can either be a 1 or 2")
+
+        
+    @commands.command()
+    async def out(self, ctx):
+        db = sqlite3.connect('roster.sqlite')
+        cursor = db.cursor()
+        sql = "SELECT nickname FROM main WHERE nickname=?"
+        cursor.execute(sql, [(ctx.author.name)])
+        result = cursor.fetchall()
+        user_name = ctx.author.mention
+        user_nickname = ctx.author.name
+        if len(result) == 0:
+            await ctx.send("You are not in any WS Rosters")
+        else:
+            sql = "DELETE FROM main WHERE nickname=?"
+            cursor.execute(sql, [(ctx.author.name)])
+            db.commit()
+            cursor.close()
+            db.close()
+            await ctx.send("You have been removed from the WS Roster")
+        
+    @commands.command()
+    async def roster(self, ctx, message):
+        if (message == '1') or (message == '2'):
+            db = sqlite3.connect('roster.sqlite')
+            cursor = db.cursor()
+            sql = "SELECT nickname FROM main WHERE roster = ?"
+            cursor.execute(sql, message)
+            results = cursor.fetchall()
+            if len(results) != 0:
+                raw_string_results = str(results)
+                string_results = raw_string_results.strip('[]')
+                string_results = string_results.strip('()')
+                string_results = string_results.strip(',')
+                string_results = string_results.strip('\'')
+                people = string_results.split(" ")
+                roster_embed = discord.Embed(
+                    title = 'BattleCo WS Organizer',
+                    description = (f'The current roster for WS Roster #{message}'),
+                    colour = discord.Colour.teal()
+                )
+                roster_embed.set_footer(text='Best of luck on this WS!')
+                number = 1
+                for person in people:
+                    roster_embed.add_field(name=f'Player #{number}', value=f'{person}', inline=False)
+                    number += 1
+                await ctx.send(embed=roster_embed)
+            else:
+                await ctx.send(f"Nobody is in WS Roster #{message}, type !in {message} to join the roster")
+        else:
+            await ctx.send("Invalid roster, it can either be 1 or 2")
+
+
 
 
 
