@@ -25,10 +25,31 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
             if len(result) == 0:
                 sql = ("INSERT INTO main(name, nickname, roster) VALUES(?,?,?)")
                 val = (user_name, user_nickname, message)
-                await ctx.send(f"You are signed up for WS Roster #{message}")
+                cursor.execute(sql,val)
+                sql = "SELECT nickname FROM main WHERE roster = ?"
+                cursor.execute(sql, message)
+                results = cursor.fetchall()
+                if len(results) != 0:
+                    people = []
+                    for result in results:
+                        result = str(result)
+                        result = result[2:]
+                        result = result[:len(result)-3]
+                        people.append(result)
+                    roster_embed = discord.Embed(
+                        title = 'BattleCo WS Organizer',
+                        description = (f'The current roster for WS Roster #{message}'),
+                        colour = discord.Colour.teal()
+                    )
+                    roster_embed.set_footer(text='Best of luck on this WS!')
+                    number = 1
+                    for person in people:
+                        roster_embed.add_field(name=f'Player #{number}', value=f'{person}', inline=False)
+                        number += 1
+                    await ctx.send(embed=roster_embed)
+                    await ctx.send(f"You have been added to WS Roster #{message}")
             else:
                 await ctx.send("You are already in a WS Roster, type !out to leave your current WS Roster")
-            cursor.execute(sql, val)
             db.commit()
             cursor.close()
             db.close()
@@ -64,12 +85,12 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
             cursor.execute(sql, message)
             results = cursor.fetchall()
             if len(results) != 0:
-                raw_string_results = str(results)
-                string_results = raw_string_results.strip('[]')
-                string_results = string_results.strip('()')
-                string_results = string_results.strip(',')
-                string_results = string_results.strip('\'')
-                people = string_results.split(" ")
+                people = []
+                for result in results:
+                    result = str(result)
+                    result = result[2:]
+                    result = result[:len(result)-3]
+                    people.append(result)
                 roster_embed = discord.Embed(
                     title = 'BattleCo WS Organizer',
                     description = (f'The current roster for WS Roster #{message}'),

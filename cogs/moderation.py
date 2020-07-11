@@ -377,7 +377,7 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
         print(api_request.text)
         text_api = str(api_request.text)
         print(text_api.find(message))
-        if text_api.find(message) is not -1:
+        if (text_api.find(message) != -1):
             print(text_api[text_api.find(message):][:text_api[text_api.find(message):].index('}')+1])
             await ctx.send(text_api[text_api.find(message):][:text_api[text_api.find(message):].index('}')+1])
             
