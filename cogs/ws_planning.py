@@ -12,7 +12,7 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
     def __init__(self, bot):
         self.bot = bot
     
-    @commands.command(aliases=['in'])
+    @commands.command(aliases=['in'], help="Type !in (yes I know it says !_in but !in works) followed by either a 1 or a 2 to join a roster")
     async def _in(self, ctx, message):
         if (message == '1') or (message == '2'):
             db = sqlite3.connect('roster.sqlite')
@@ -36,7 +36,7 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
             await ctx.send("Invalid roster selection, it can either be a 1 or 2")
 
         
-    @commands.command()
+    @commands.command(help="Use this command (!out) to leave a roster")
     async def out(self, ctx):
         db = sqlite3.connect('roster.sqlite')
         cursor = db.cursor()
@@ -55,7 +55,7 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
             db.close()
             await ctx.send("You have been removed from the WS Roster")
         
-    @commands.command()
+    @commands.command(help="Use this command (!roster) followed by either a 1 or a 2 to see who is in that WS Roster")
     async def roster(self, ctx, message):
         if (message == '1') or (message == '2'):
             db = sqlite3.connect('roster.sqlite')
