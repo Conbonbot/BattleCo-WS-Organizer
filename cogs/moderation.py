@@ -381,6 +381,8 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
         if (text_api.find(message) != -1):
             print(text_api[text_api.find(message):][:text_api[text_api.find(message):].index('}')+1])
             await ctx.send(text_api[text_api.find(message):][:text_api[text_api.find(message):].index('}')+1])
+        else:
+            await ctx.send("The level is 0")
             
 
 
