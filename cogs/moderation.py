@@ -6,6 +6,7 @@ import datetime
 from discord.ext import commands
 import discord
 import requests
+import asyncio
 
 class BattleCoCogs(commands.Cog, name='BattleCo'):
 
