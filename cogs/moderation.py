@@ -58,13 +58,10 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
         db.close()
 
         embed = discord.Embed(
-            title = 'BattleCo WS Organizer',
-            description = (f'The current builds for {ctx.author.name}'),
             colour = discord.Colour.blue()
         )
-        embed.set_footer(text='Best of luck on this WS!')
         embed.set_author(name=ctx.author)
-        embed.add_field(name='Battleship', value=f'{bs_data}', inline=False)
+        embed.add_field(name='Battleship', value=f'{bs_data}', inline=True)
         embed.add_field(name='Miner', value=f'{miner_data}', inline=True)
         embed.add_field(name='Transport', value=f'{ts_data}', inline=True)
 
@@ -128,11 +125,8 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
             # Shows an embed of the data
 
             embed = discord.Embed(
-                title = 'BattleCo WS Organizer',
-                description = (f'The current builds for {player}'),
                 colour = discord.Colour.blue()
             )
-            embed.set_footer(text='Best of luck on this WS!')
             embed.set_author(name=player_name)
             embed.add_field(name='Battleship', value=f'{bs_data}', inline=False)
             embed.add_field(name='Miner', value=f'{miner_data}', inline=True)
@@ -148,7 +142,6 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
     async def ws(self, ctx):
         print(ctx.author.name, " has typed the !ws command")
         ws_embed = discord.Embed(
-            title = 'BattleCo WS Organizer',
             description = 'WS Setup Commands',
             colour = discord.Colour.green()
         )
@@ -225,11 +218,8 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
 
         # Battleship EMBED
         final_embed = discord.Embed(
-            title = 'BattleCo WS Organizer',
-            description = f'Current {tag}',
             colour = discord.Colour.dark_gold()
         )
-        final_embed.set_footer(text='Best of luck on this WS!')
         final_embed.set_author(name=ctx.author)
         final_embed.add_field(name=f'The current {tag} of {ctx.author.name}', value=f'{" ".join(mods)}')
         await ctx.send(embed=final_embed)
@@ -252,11 +242,8 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
             
 
             embed = discord.Embed(
-                title = 'BattleCo WS Organizer',
-                description = (f'The current battleship of {ctx.author.name}'),
                 colour = discord.Colour.blue()
             )
-            embed.set_footer(text='Best of luck on this WS!')
             embed.set_author(name=ctx.author.name)
             embed.add_field(name='Battleship', value=f'{bs_data}', inline=False)
 
@@ -276,11 +263,8 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
             
 
             embed = discord.Embed(
-                title = 'BattleCo WS Organizer',
-                description = (f'The current miner of {ctx.author.name}'),
                 colour = discord.Colour.blue()
             )
-            embed.set_footer(text='Best of luck on this WS!')
             embed.set_author(name=ctx.author.name)
             embed.add_field(name='Miner', value=f'{miner_data}', inline=False)
 
@@ -300,11 +284,8 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
 
 
             embed = discord.Embed(
-                title = 'BattleCo WS Organizer',
-                description = (f'The current transport of {ctx.author.name}'),
                 colour = discord.Colour.blue()
             )
-            embed.set_footer(text='Best of luck on this WS!')
             embed.set_author(name=ctx.author.name)
             embed.add_field(name='Transport', value=f'{ts_data}', inline=False)
 

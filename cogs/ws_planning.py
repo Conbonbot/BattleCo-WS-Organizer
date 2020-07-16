@@ -38,7 +38,6 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                         result = result[:len(result)-3]
                         people.append(result)
                     roster_embed = discord.Embed(
-                        title = 'BattleCo WS Organizer',
                         description = (f'The current roster for WS Roster #{message}'),
                         colour = discord.Colour.teal()
                     )
@@ -93,7 +92,6 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                     result = result[:len(result)-3]
                     people.append(result)
                 roster_embed = discord.Embed(
-                    title = 'BattleCo WS Organizer',
                     description = (f'The current roster for WS Roster #{message}'),
                     colour = discord.Colour.teal()
                 )
