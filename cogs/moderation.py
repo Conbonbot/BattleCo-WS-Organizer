@@ -60,7 +60,7 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
         embed = discord.Embed(
             colour = discord.Colour.blue()
         )
-        embed.set_author(name=ctx.author)
+        embed.set_author(name=ctx.author.name)
         embed.add_field(name='Battleship', value=f'{bs_data}', inline=True)
         embed.add_field(name='Miner', value=f'{miner_data}', inline=True)
         embed.add_field(name='Transport', value=f'{ts_data}', inline=True)
@@ -128,7 +128,7 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
                 colour = discord.Colour.blue()
             )
             embed.set_author(name=player_name)
-            embed.add_field(name='Battleship', value=f'{bs_data}', inline=False)
+            embed.add_field(name='Battleship', value=f'{bs_data}', inline=True)
             embed.add_field(name='Miner', value=f'{miner_data}', inline=True)
             embed.add_field(name='Transport', value=f'{ts_data}', inline=True)
 
@@ -156,73 +156,126 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
 
     @ws.command()
     async def add(self, ctx, tag, *mods):
-        #print(tag, mods)
-        # Tag represents the ship, mods represent what's present on the ship
-        db = sqlite3.connect('main.sqlite')
-        cursor = db.cursor()
-        # Get the stored object from database
-        sql = "SELECT nickname FROM main WHERE nickname=?"
-        cursor.execute(sql, [(ctx.author.name)])
-        result = cursor.fetchall()
-        user_name = ctx.author.mention
-        user_nickname = ctx.author.name
-        # Setting/Updating User data
-        if len(result) == 0:
-            sql = ("INSERT INTO main(name, nickname) VALUES(?,?)")
-            val = (user_name, user_nickname)
-        else:
-            sql = ("UPDATE main SET name = ? WHERE nickname = ?")
-            val = (user_name, user_nickname)
-        cursor.execute(sql, val)
-        # Adding a Battleship
-        if(tag == 'bs'):
-            sql = "SELECT battleship FROM main WHERE nickname=?"
+        user_id_raw = ctx.author.mention
+        user_id = str(user_id_raw).strip('<>')
+        user_id = user_id[1:]
+        api_request_str = 'https://bot.hs-compendium.com/compendium/api/tech?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzODQ0ODExNTE0NzUxMjIxNzkiLCJndWlsZElkIjoiMzkzMTQ5NjIxNDYwOTI2NDY0IiwiaWF0IjoxNTk0MjYzMDU2LCJleHAiOjE2MjU4MjA2NTYsInN1YiI6ImFwaSJ9.pokmGiqTNIz0VztPrXhvM_xofWzuOYO1DSA2zTwP01s&userid=' + user_id
+        #print(api_request_str)
+        api_request = requests.get(api_request_str)
+        full_text = api_request.text
+        correct_mods = True
+        if(tag == "bs"):
+            bs_level = full_text.find("bs\":{\"level\":")
+            bs_mod_level = full_text[bs_level + len("bs\":{\"level\":"): bs_level + len("bs\":{\"level\":") + 1]
+            print(bs_mod_level)
+            if(len(mods) > int(bs_mod_level)+1):
+                await ctx.send("You have too many mods for your current bs")
+                await ctx.send(f"You can have only {int(bs_mod_level)+1} mods, not {len(mods)}")
+                correct_mods = False
+            elif(len(mods) < int(bs_mod_level)+1):
+                await ctx.send("You have too few mods for your current bs")
+                await ctx.send(f"You can have only {int(bs_mod_level)+1} mods, not {len(mods)}")
+                correct_mods = False
+        elif(tag == "miner"):
+            miner_level = full_text.find("miner\":{\"level\":")
+            miner_mod_level = full_text[miner_level + len("miner\":{\"level\":"): miner_level + len("miner\":{\"level\":") + 1]
+            if(len(mods) > int(miner_mod_level)):
+                await ctx.send("You have too many mods for your current miner")
+                await ctx.send(f"You can have only {int(miner_mod_level)} mods, not {len(mods)}")
+                correct_mods = False
+            elif(len(mods) < int(miner_mod_level)):
+                await ctx.send("You have too few mods for your current miner")
+                await ctx.send(f"You can have only {int(miner_mod_level)} mods, not {len(mods)}")
+                correct_mods = False
+        elif(tag == "ts"):
+            ts_level = full_text.find("transp\":{\"level\":")
+            ts_mod_level = full_text[ts_level + len("bs\":{\"level\":"): ts_level + len("transp\":{\"level\":") + 1]
+            if(int(ts_mod_level) >= 3):
+                if(len(mods) > int(ts_mod_level)+1):
+                    await ctx.send("You have too many mods for your current ts")
+                    await ctx.send(f"You can have only {int(ts_mod_level)+1} mods, not {len(mods)}")
+                    correct_mods = False
+                elif(len(mods) < int(ts_mod_level)+1):
+                    await ctx.send("You have too few mods for your current ts")
+                    await ctx.send(f"You can have only {int(ts_mod_level)+1} mods, not {len(mods)}")
+                    correct_mods = False
+            elif(int(ts_mod_level) <= 2):
+                if(len(mods) > int(ts_mod_level)):
+                    await ctx.send("You have too many mods for your current ts")
+                    await ctx.send(f"You can have only {int(ts_mod_level)} mods, not {len(mods)}")
+                    correct_mods = False
+                elif(len(mods) < int(ts_mod_level)):
+                    await ctx.send("You have too few mods for your current ts")     
+                    await ctx.send(f"You can have only {int(ts_mod_level)} mods, not {len(mods)}")  
+                    correct_mods = False     
+        if(correct_mods):
+            #print(tag, mods)
+            # Tag represents the ship, mods represent what's present on the ship
+            db = sqlite3.connect('main.sqlite')
+            cursor = db.cursor()
+            # Get the stored object from database
+            sql = "SELECT nickname FROM main WHERE nickname=?"
             cursor.execute(sql, [(ctx.author.name)])
             result = cursor.fetchall()
-            if len(result) == 1:
-                string_mods = " ".join(mods)
-                sql = ("UPDATE main SET battleship = ? WHERE nickname = ?")
-                val = (string_mods, user_nickname)
+            user_name = ctx.author.mention
+            user_nickname = ctx.author.name
+            # Setting/Updating User data
+            if len(result) == 0:
+                sql = ("INSERT INTO main(name, nickname) VALUES(?,?)")
+                val = (user_name, user_nickname)
             else:
-                await ctx.send("Invalid Options")
-            cursor.execute(sql,val)
-        # Adding a Miner
-        elif(tag == 'miner'):
-            sql = "SELECT miner FROM main WHERE nickname=?"
-            cursor.execute(sql, [(ctx.author.name)])
-            result = cursor.fetchall()
-            if len(result) == 1:
-                string_mods = " ".join(mods)
-                sql = ("UPDATE main SET miner = ? WHERE nickname = ?")
-                val = (string_mods, user_nickname)
+                sql = ("UPDATE main SET name = ? WHERE nickname = ?")
+                val = (user_name, user_nickname)
+            cursor.execute(sql, val)
+            # Adding a Battleship
+            if(tag == 'bs'):
+                sql = "SELECT battleship FROM main WHERE nickname=?"
+                cursor.execute(sql, [(ctx.author.name)])
+                result = cursor.fetchall()
+                if len(result) == 1:
+                    string_mods = " ".join(mods)
+                    sql = ("UPDATE main SET battleship = ? WHERE nickname = ?")
+                    val = (string_mods, user_nickname)
+                else:
+                    await ctx.send("Invalid Options")
+                cursor.execute(sql,val)
+            # Adding a Miner
+            elif(tag == 'miner'):
+                sql = "SELECT miner FROM main WHERE nickname=?"
+                cursor.execute(sql, [(ctx.author.name)])
+                result = cursor.fetchall()
+                if len(result) == 1:
+                    string_mods = " ".join(mods)
+                    sql = ("UPDATE main SET miner = ? WHERE nickname = ?")
+                    val = (string_mods, user_nickname)
+                else:
+                    await ctx.send("Invalid Options")
+                cursor.execute(sql,val)
+            # Adding a Transport
+            elif(tag == 'ts'):
+                sql = "SELECT transport FROM main WHERE nickname=?"
+                cursor.execute(sql, [(ctx.author.name)])
+                result = cursor.fetchall()
+                if len(result) == 1:
+                    string_mods = " ".join(mods)
+                    sql = ("UPDATE main SET transport = ? WHERE nickname = ?")
+                    val = (string_mods, user_nickname)
+                else:
+                    await ctx.send("Invalid Options")
+                cursor.execute(sql,val)
             else:
-                await ctx.send("Invalid Options")
-            cursor.execute(sql,val)
-        # Adding a Transport
-        elif(tag == 'ts'):
-            sql = "SELECT transport FROM main WHERE nickname=?"
-            cursor.execute(sql, [(ctx.author.name)])
-            result = cursor.fetchall()
-            if len(result) == 1:
-                string_mods = " ".join(mods)
-                sql = ("UPDATE main SET transport = ? WHERE nickname = ?")
-                val = (string_mods, user_nickname)
-            else:
-                await ctx.send("Invalid Options")
-            cursor.execute(sql,val)
-        else:
-            await ctx.send('Invalid Option')
-        db.commit()
-        cursor.close()
-        db.close()
+                await ctx.send('Invalid Option')
+            db.commit()
+            cursor.close()
+            db.close()
 
-        # Battleship EMBED
-        final_embed = discord.Embed(
-            colour = discord.Colour.dark_gold()
-        )
-        final_embed.set_author(name=ctx.author)
-        final_embed.add_field(name=f'The current {tag} of {ctx.author.name}', value=f'{" ".join(mods)}')
-        await ctx.send(embed=final_embed)
+            # Battleship EMBED
+            final_embed = discord.Embed(
+                colour = discord.Colour.dark_gold()
+            )
+            final_embed.set_author(name=ctx.author.name)
+            final_embed.add_field(name=f'The current {tag} of {ctx.author.name}', value=f'{" ".join(mods)}')
+            await ctx.send(embed=final_embed)
 
     @ws.command(help="Shows a player their bs/miner/ts")
     async def show(self, ctx, tag):
@@ -257,7 +310,7 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
             miner_data = str(miner_data).strip('()')
             if (miner_data != 'None,'):
                 miner_data = miner_data[1:]
-                miner_data = miner_data[:len(bs_data)-2]
+                miner_data = miner_data[:len(miner_data)-2]
             else:
                 miner_data = miner_data[:len(miner_data)-1]
             
@@ -277,9 +330,9 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
             ts_data = str(ts_data).strip('()')
             if (ts_data != 'None,'):
                 ts_data = ts_data[1:]
-                ts_data = ts_data[:len(bs_data)-2]
+                ts_data = ts_data[:len(ts_data)-2]
             else:
-                ts_data = ts_data[:len(bs_data)-1]
+                ts_data = ts_data[:len(ts_data)-1]
             
 
 
