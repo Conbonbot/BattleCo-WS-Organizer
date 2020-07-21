@@ -46,13 +46,17 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                     for person in people:
                         roster_embed.add_field(name=f'Player #{number}', value=f'{person}', inline=False)
                         number += 1
-                    await ctx.send(embed=roster_embed)
-                    await ctx.send(f"You have been added to WS Roster #{message}")
+                    embed_msg = await ctx.send(embed=roster_embed)
+                    msg = await ctx.send(f"You have been added to WS Roster #{message}")
             else:
-                await ctx.send("You are already in a WS Roster, type !out to leave your current WS Roster")
+                msg = await ctx.send("You are already in a WS Roster, type !out to leave your current WS Roster")
             db.commit()
             cursor.close()
             db.close()
+            await asyncio.sleep(20)
+            await ctx.message.delete()
+            await msg.delete()
+            await embed_msg.delete()
         else:
             await ctx.send("Invalid roster selection, it can either be a 1 or 2")
 
@@ -67,14 +71,17 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         user_name = ctx.author.mention
         user_nickname = ctx.author.name
         if len(result) == 0:
-            await ctx.send("You are not in any WS Rosters")
+            msg = await ctx.send("You are not in any WS Rosters")
         else:
             sql = "DELETE FROM main WHERE nickname=?"
             cursor.execute(sql, [(ctx.author.name)])
             db.commit()
             cursor.close()
             db.close()
-            await ctx.send("You have been removed from the WS Roster")
+            msg = await ctx.send("You have been removed from the WS Roster")
+        await asyncio.sleep(20)
+        await ctx.message.delete()
+        await msg.delete()
         
     @commands.command(help="Use this command (!roster) followed by either a 1 or a 2 to see who is in that WS Roster")
     async def roster(self, ctx, message):
@@ -105,15 +112,43 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                 msg = await ctx.send(f"Nobody is in WS Roster #{message}, type !in {message} to join the roster")
         else:
             msg = await ctx.send("Invalid roster, it can either be 1 or 2")
-        await ctx.message.delete()
         await asyncio.sleep(20)
+        await ctx.message.delete()
         await msg.delete()
 
+    @commands.command(help="Use this command to clear the WS Queue, to start the WS")
+    async def start(self, ctx, message):
+        if (message == '1') or (message == '2'):
+            db = sqlite3.connect('roster.sqlite')
+            cursor = db.cursor()
+            sql = "SELECT roster FROM main WHERE roster=?"
+            cursor.execute(sql, message)
+            results = cursor.fetchall()
+            if (len(results) != 0):
+                if(len(results) % 5 == 0) and (len(results) < 15):
+                    sql = "DELETE FROM main WHERE roster=?"
+                    cursor.execute(sql, message)
+                    db.commit()
+                    cursor.close()
+                    db.close()
+                    msg = await ctx.send(f"The WS roster #{message} has been cleared, best of luck!")
+                else:
+                    msg = await ctx.send("The roster doesn't have 5, 10, or 15 people in it")
+            else:
+                msg = await ctx.send(f"There is nobody in WS Roster #{message}")
+        else:
+            msg = await ctx.send("There are only two rosters, so use !start 1 or !start 2")
+        await asyncio.sleep(20)
+        await ctx.message.delete()
+        await msg.delete()
+        
+                    
 
 
 
 
 
+ 
 def setup(bot):
     bot.add_cog(BattleCoWSCogs(bot))
     print('BattleCo is loaded')

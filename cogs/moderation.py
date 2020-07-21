@@ -65,7 +65,11 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
         embed.add_field(name='Miner', value=f'{miner_data}', inline=True)
         embed.add_field(name='Transport', value=f'{ts_data}', inline=True)
 
-        await ctx.send(embed=embed)
+        msg = await ctx.send(embed=embed)
+
+        await asyncio.sleep(20)
+        await ctx.message.delete()
+        await msg.delete()
 
 
     # Finds a players ships
@@ -132,9 +136,12 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
             embed.add_field(name='Miner', value=f'{miner_data}', inline=True)
             embed.add_field(name='Transport', value=f'{ts_data}', inline=True)
 
-            await ctx.send(embed=embed)
+            msg = await ctx.send(embed=embed)
         else:
-            await ctx.send("Player not found")
+            msg = await ctx.send("Player not found")
+        await asyncio.sleep(20)
+        await ctx.message.delete()
+        await msg.delete()
 
 
 
@@ -145,17 +152,21 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
             description = 'WS Setup Commands',
             colour = discord.Colour.green()
         )
-        ws_embed.set_footer(text='Example: !ws add bs battery10 omega8 teleport7 repair7 time_warp8 alpha_rocket6 \nExample: !ws show miner')
+        ws_embed.set_footer(text='Example: !ws add bs battery omega teleport remoterepair timewarp alpharocket \nExample: !ws show miner')
         ws_embed.set_author(name=ctx.author)
         ws_embed.add_field(name='Add Ship', value='!ws add bs (example)', inline=True)
         ws_embed.add_field(name='Show Ship', value='!ws show miner (example)', inline=True)
         ws_embed.add_field(name='Delete Ship', value='!ws delete ts (example)', inline=True)
-        ws_embed.add_field(name='Next Steps', value='for adding (use can use the add command to edit your ships) ships, add the mods listed on your ship, but for show and delete, just enter the name of the ship you want to see/delete', inline=False)
-        await ctx.send(embed=ws_embed)
+        ws_embed.add_field(name='Next Steps', value='for adding (use can use the add command to edit your ships) ships, add the mods listed on your ship (just list the mod, the Hades Star Compendium Bot will fill the level), but for show and delete, just enter the name of the ship you want to see/delete', inline=False)
+        msg = await ctx.send(embed=ws_embed)
+        await asyncio.sleep(40)
+        await ctx.message.delete()
+        await msg.delete()
         
 
     @ws.command()
     async def add(self, ctx, tag, *mods):
+        msg = []
         user_id_raw = ctx.author.mention
         user_id = str(user_id_raw).strip('<>')
         user_id = user_id[1:]
@@ -169,44 +180,44 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
             bs_mod_level = full_text[bs_level + len("bs\":{\"level\":"): bs_level + len("bs\":{\"level\":") + 1]
             print(bs_mod_level)
             if(len(mods) > int(bs_mod_level)+1):
-                await ctx.send("You have too many mods for your current bs")
-                await ctx.send(f"You can have only {int(bs_mod_level)+1} mods, not {len(mods)}")
+                msg.append(await ctx.send("You have too many mods for your current bs"))
+                msg.append(await ctx.send(f"You can have only {int(bs_mod_level)+1} mods, not {len(mods)}"))
                 correct_mods = False
             elif(len(mods) < int(bs_mod_level)+1):
-                await ctx.send("You have too few mods for your current bs")
-                await ctx.send(f"You can have only {int(bs_mod_level)+1} mods, not {len(mods)}")
+                msg.append(await ctx.send("You have too few mods for your current bs"))
+                msg.append(await ctx.send(f"You can have only {int(bs_mod_level)+1} mods, not {len(mods)}"))
                 correct_mods = False
         elif(tag == "miner"):
             miner_level = full_text.find("miner\":{\"level\":")
             miner_mod_level = full_text[miner_level + len("miner\":{\"level\":"): miner_level + len("miner\":{\"level\":") + 1]
             if(len(mods) > int(miner_mod_level)):
-                await ctx.send("You have too many mods for your current miner")
-                await ctx.send(f"You can have only {int(miner_mod_level)} mods, not {len(mods)}")
+                msg.append(await ctx.send("You have too many mods for your current miner"))
+                msg.append(await ctx.send(f"You can have only {int(miner_mod_level)} mods, not {len(mods)}"))
                 correct_mods = False
             elif(len(mods) < int(miner_mod_level)):
-                await ctx.send("You have too few mods for your current miner")
-                await ctx.send(f"You can have only {int(miner_mod_level)} mods, not {len(mods)}")
+                msg.append(await ctx.send("You have too few mods for your current miner"))
+                msg.append(await ctx.send(f"You can have only {int(miner_mod_level)} mods, not {len(mods)}"))
                 correct_mods = False
         elif(tag == "ts"):
             ts_level = full_text.find("transp\":{\"level\":")
             ts_mod_level = full_text[ts_level + len("bs\":{\"level\":"): ts_level + len("transp\":{\"level\":") + 1]
             if(int(ts_mod_level) >= 3):
                 if(len(mods) > int(ts_mod_level)+1):
-                    await ctx.send("You have too many mods for your current ts")
-                    await ctx.send(f"You can have only {int(ts_mod_level)+1} mods, not {len(mods)}")
+                    msg.append(await ctx.send("You have too many mods for your current ts"))
+                    msg.append(await ctx.send(f"You can have only {int(ts_mod_level)+1} mods, not {len(mods)}"))
                     correct_mods = False
                 elif(len(mods) < int(ts_mod_level)+1):
-                    await ctx.send("You have too few mods for your current ts")
-                    await ctx.send(f"You can have only {int(ts_mod_level)+1} mods, not {len(mods)}")
+                    msg.append(await ctx.send("You have too few mods for your current ts"))
+                    msg.append(await ctx.send(f"You can have only {int(ts_mod_level)+1} mods, not {len(mods)}"))
                     correct_mods = False
             elif(int(ts_mod_level) <= 2):
                 if(len(mods) > int(ts_mod_level)):
-                    await ctx.send("You have too many mods for your current ts")
-                    await ctx.send(f"You can have only {int(ts_mod_level)} mods, not {len(mods)}")
+                    msg.append(await ctx.send("You have too many mods for your current ts"))
+                    msg.append(await ctx.send(f"You can have only {int(ts_mod_level)} mods, not {len(mods)}"))
                     correct_mods = False
                 elif(len(mods) < int(ts_mod_level)):
-                    await ctx.send("You have too few mods for your current ts")     
-                    await ctx.send(f"You can have only {int(ts_mod_level)} mods, not {len(mods)}")  
+                    msg.append(await ctx.send("You have too few mods for your current ts"))
+                    msg.append(await ctx.send(f"You can have only {int(ts_mod_level)} mods, not {len(mods)}")) 
                     correct_mods = False     
         if(correct_mods):
             #print(tag, mods)
@@ -237,7 +248,7 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
                     sql = ("UPDATE main SET battleship = ? WHERE nickname = ?")
                     val = (string_mods, user_nickname)
                 else:
-                    await ctx.send("Invalid Options")
+                    msg.append(await ctx.send("Invalid Options"))
                 cursor.execute(sql,val)
             # Adding a Miner
             elif(tag == 'miner'):
@@ -249,7 +260,7 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
                     sql = ("UPDATE main SET miner = ? WHERE nickname = ?")
                     val = (string_mods, user_nickname)
                 else:
-                    await ctx.send("Invalid Options")
+                   msg.append(await ctx.send("Invalid Options"))
                 cursor.execute(sql,val)
             # Adding a Transport
             elif(tag == 'ts'):
@@ -261,10 +272,10 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
                     sql = ("UPDATE main SET transport = ? WHERE nickname = ?")
                     val = (string_mods, user_nickname)
                 else:
-                    await ctx.send("Invalid Options")
+                    msg.append(await ctx.send("Invalid Options"))
                 cursor.execute(sql,val)
             else:
-                await ctx.send('Invalid Option')
+                msg.append(await ctx.send('Invalid Option'))
             db.commit()
             cursor.close()
             db.close()
@@ -275,7 +286,12 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
             )
             final_embed.set_author(name=ctx.author.name)
             final_embed.add_field(name=f'The current {tag} of {ctx.author.name}', value=f'{" ".join(mods)}')
-            await ctx.send(embed=final_embed)
+            msg += await ctx.send(embed=final_embed)
+        await asyncio.sleep(20)
+        await ctx.message.delete()
+        for ms in msg:
+            await ms.delete()
+            
 
     @ws.command(help="Shows a player their bs/miner/ts")
     async def show(self, ctx, tag):
@@ -300,7 +316,7 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
             embed.set_author(name=ctx.author.name)
             embed.add_field(name='Battleship', value=f'{bs_data}', inline=False)
 
-            await ctx.send(embed=embed)
+            msg = await ctx.send(embed=embed)
 
         elif(tag == 'miner'):
             miner_sql = "SELECT miner FROM main WHERE nickname=?"
@@ -321,7 +337,7 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
             embed.set_author(name=ctx.author.name)
             embed.add_field(name='Miner', value=f'{miner_data}', inline=False)
 
-            await ctx.send(embed=embed)
+            msg = await ctx.send(embed=embed)
         elif(tag == 'ts'):
             ts_sql = "SELECT transport FROM main WHERE nickname=?"
             cursor.execute(ts_sql, [(ctx.author.name)])
@@ -342,13 +358,16 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
             embed.set_author(name=ctx.author.name)
             embed.add_field(name='Transport', value=f'{ts_data}', inline=False)
 
-            await ctx.send(embed=embed)
+            msg = await ctx.send(embed=embed)
         else:
-            await ctx.send("Invalid Options")
+            msg = await ctx.send("Invalid Options")
 
         db.commit()
         cursor.close()
         db.close()
+        await asyncio.sleep(20)
+        await ctx.message.delete()
+        await msg.delete()
 
     @ws.command(help="deletes a players bs/miner/ts")
     async def delete(self, ctx, tag):
@@ -361,7 +380,7 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
             sql = "DELETE FROM main WHERE battleship = ? AND nickname = ?"
             val = (result, ctx.author.name)
             cursor.execute(sql, val)
-            await ctx.send("Battleship deleted")
+            msg = await ctx.send("Battleship deleted")
         if (tag == 'miner'):
             miner_sql = "SELECT miner FROM main WHERE nickname=?"
             cursor.execute(miner_sql, [(ctx.author.name)])
@@ -369,7 +388,7 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
             sql = "DELETE FROM main WHERE miner = ? AND nickname = ?"
             val = (result, ctx.author.name)
             cursor.execute(sql, val)
-            await ctx.send("Miner deleted")
+            msg = await ctx.send("Miner deleted")
         if (tag == 'ts'):
             ts_sql = "SELECT transport FROM main WHERE nickname=?"
             cursor.execute(ts_sql, [(ctx.author.name)])
@@ -377,10 +396,16 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
             sql = "DELETE FROM main WHERE transport = ? AND nickname = ?"
             val = (result, ctx.author.name)
             cursor.execute(sql, val)
-            await ctx.send("Transport deleted")
+            msg = await ctx.send("Transport deleted")
+        else:
+            msg = await ctx.send("Invalid option, either bs/miner/ts")
         db.commit()
         cursor.close()
         db.close()
+        await asyncio.sleep(20)
+        await ctx.message.delete()
+        await msg.delete()
+
 
     @commands.command(help="a command for you to ask questions/give feedback")
     async def question(self, ctx, *message):
@@ -399,7 +424,11 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
         cursor.close()
         db.close()
 
-        await ctx.send("Question has been stored to database")
+        msg = await ctx.send("Question has been stored to database")
+        
+        await asyncio.sleep(5)
+        await ctx.message.delete()
+        await msg.delete()
 
     @commands.command()
     async def test_api(self, ctx, message):
