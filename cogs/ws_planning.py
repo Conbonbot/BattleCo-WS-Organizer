@@ -224,7 +224,6 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         await asyncio.sleep(20)
         await ctx.message.delete()
         await msg.delete()
-        # test stuff
                     
 
 
