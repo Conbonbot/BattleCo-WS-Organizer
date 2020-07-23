@@ -1,0 +1,3 @@
+git rm --cached questions.sqlite
+git rm --cached roster.sqlite
+git rm --cached main.sqlite
