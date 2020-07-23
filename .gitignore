@@ -1,0 +1,4 @@
+questions.sqlite
+roster.sqlite
+.env
+main.sqlite
