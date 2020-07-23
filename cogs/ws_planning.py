@@ -65,11 +65,13 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         
     @commands.command(help="Used to add people to the WS Roster (ping the user, then type their name)")
     async def manualadd(self, ctx, message, mention, name):
+        print("HEllo")
+        print(self, ctx, message, mention, name)
         if (message == '1') or (message == '2'):
             db = sqlite3.connect('roster.sqlite')
             cursor = db.cursor()
             sql = "SELECT nickname FROM main WHERE nickname=?"
-            cursor.execute(sql, [(ctx.author.name)])
+            cursor.execute(sql, [(name)])
             result = cursor.fetchall()
             user_name = mention
             user_nickname = name
@@ -97,9 +99,11 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                         roster_embed.add_field(name=f'Player #{number}', value=f'{person}', inline=False)
                         number += 1
                     embed_msg = await ctx.send(embed=roster_embed)
-                    msg = await ctx.send(f"{user_nickname} have been added to WS Roster #{message}")
+                    msg = await ctx.send(f"{user_nickname} has been added to WS Roster #{message}")
                 else:
-                    msg = await ctx.send("They are already in a WS Roster")
+                    msg = await ctx.send("You are already in a WS Roster, type !out to leave your current WS Roster")
+            else:
+                msg = await ctx.send(f"{name} already exists in a WS Roster")
             db.commit()
             cursor.close()
             db.close()
@@ -108,10 +112,11 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
             await msg.delete()
             await embed_msg.delete()
         else:
-            msg = await ctx.send("Invalid roster selection, it can either be a 1 or 2")
+            msg = await ctx.send("Invalid option, it can either be a 1 or a 2")
             await asyncio.sleep(20)
             await ctx.message.delete()
             await msg.delete()
+
     
 
     
@@ -135,6 +140,28 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
             cursor.close()
             db.close()
             msg = await ctx.send("You have been removed from the WS Roster")
+        await asyncio.sleep(20)
+        await ctx.message.delete()
+        await msg.delete()
+
+    @commands.command(help="Use this command (!out) to leave a roster")
+    async def manualout(self, ctx, mention, name):
+        db = sqlite3.connect('roster.sqlite')
+        cursor = db.cursor()
+        sql = "SELECT nickname FROM main WHERE nickname=?"
+        cursor.execute(sql, [(name)])
+        result = cursor.fetchall()
+        user_name = ctx.author.mention
+        user_nickname = ctx.author.name
+        if len(result) == 0:
+            msg = await ctx.send(f"{name} is not in any WS Rosters")
+        else:
+            sql = "DELETE FROM main WHERE nickname=?"
+            cursor.execute(sql, [(name)])
+            db.commit()
+            cursor.close()
+            db.close()
+            msg = await ctx.send(f"{name} has been removed from the WS Roster")
         await asyncio.sleep(20)
         await ctx.message.delete()
         await msg.delete()
