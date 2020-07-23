@@ -225,6 +225,7 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         await ctx.message.delete()
         await msg.delete()
         # okay this sucks
+        # this is terrible
 
                     
 
