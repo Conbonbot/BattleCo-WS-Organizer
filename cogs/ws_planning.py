@@ -65,7 +65,6 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         
     @commands.command(help="Used to add people to the WS Roster (ping the user, then type their name)")
     async def manualadd(self, ctx, message, mention, name):
-        print("HEllo")
         print(self, ctx, message, mention, name)
         if (message == '1') or (message == '2'):
             db = sqlite3.connect('roster.sqlite')
