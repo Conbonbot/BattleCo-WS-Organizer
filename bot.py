@@ -17,15 +17,15 @@ bot = commands.Bot(command_prefix='!')
 # Ready
 @bot.event
 async def on_ready():
-    #db = sqlite3.connect('roster.sqlite')
-    #cursor = db.cursor()
-    #cursor.execute('''
-    #    CREATE TABLE IF NOT EXISTS main(
-    #        name TEXT,
-    #        nickname TEXT,
-    #        roster TEXT
-    #    )
-    #''')
+    db = sqlite3.connect('roster.sqlite')
+    cursor = db.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS main(
+            name TEXT,
+            nickname TEXT,
+            roster TEXT
+        )
+    ''')
     print(f'{bot.user.name} has connected to Discord!')
     return await bot.change_presence(activity=discord.Activity(type=1, name="BattleCo"))
 

@@ -213,7 +213,7 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                     cursor.close()
                     db.close()
                     msg = await ctx.send(f"The WS roster #{message} has been cleared, best of luck!")
-                elif(confirm == ''):
+                elif(confirm == 'clear'):
                     sql = "DELETE FROM main WHERE roster=?"
                     cursor.execute(sql, message)
                     db.commit()
