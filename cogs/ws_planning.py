@@ -128,8 +128,8 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         sql = "SELECT nickname FROM main WHERE nickname=?"
         cursor.execute(sql, [(ctx.author.name)])
         result = cursor.fetchall()
-        user_name = ctx.author.mention
-        user_nickname = ctx.author.name
+        #user_name = ctx.author.mention
+        #user_nickname = ctx.author.name
         if len(result) == 0:
             msg = await ctx.send("You are not in any WS Rosters")
         else:
@@ -150,8 +150,9 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         sql = "SELECT nickname FROM main WHERE nickname=?"
         cursor.execute(sql, [(name)])
         result = cursor.fetchall()
-        user_name = ctx.author.mention
-        user_nickname = ctx.author.name
+        #user_name = ctx.author.mention
+        #user_nickname = ctx.author.name
+        #print(user_name, user_nickname)
         if len(result) == 0:
             msg = await ctx.send(f"{name} is not in any WS Rosters")
         else:
@@ -199,7 +200,7 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         await msg.delete()
 
     @commands.command(help="Use this command to clear the WS Queue, to start the WS")
-    async def start(self, ctx, message):
+    async def start(self, ctx, message, confirm=None):
         if (message == '1') or (message == '2'):
             db = sqlite3.connect('roster.sqlite')
             cursor = db.cursor()
@@ -207,7 +208,14 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
             cursor.execute(sql, message)
             results = cursor.fetchall()
             if (len(results) != 0):
-                if(len(results) % 5 == 0) and (len(results) < 15):
+                if(len(results) % 5 == 0) and (len(results) < 16):
+                    sql = "DELETE FROM main WHERE roster=?"
+                    cursor.execute(sql, message)
+                    db.commit()
+                    cursor.close()
+                    db.close()
+                    msg = await ctx.send(f"The WS roster #{message} has been cleared, best of luck!")
+                elif(confirm == ''):
                     sql = "DELETE FROM main WHERE roster=?"
                     cursor.execute(sql, message)
                     db.commit()
@@ -215,7 +223,7 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                     db.close()
                     msg = await ctx.send(f"The WS roster #{message} has been cleared, best of luck!")
                 else:
-                    msg = await ctx.send("The roster doesn't have 5, 10, or 15 people in it")
+                    msg = await ctx.send(f"The WS Roster #{message} doesn't have 5, 10, or 15, people. However, you can override this by adding clear to this command")
             else:
                 msg = await ctx.send(f"There is nobody in WS Roster #{message}")
         else:

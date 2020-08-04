@@ -14,6 +14,9 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
         self.bot = bot
 
 
+    
+
+
     # Ships
     @commands.command(help="Displays your current ships")
     async def ships(self, ctx):
@@ -143,6 +146,27 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
         await ctx.message.delete()
         await msg.delete()
 
+    
+    @commands.command(help="Displays the mod list from the API")
+    async def modlist(self, ctx):
+        print(ctx.author.name, " has typed the !modlist command")
+        modlist_embed = discord.Embed(
+            descripion = "Mod List",
+            colour = discord.Colour.dark_grey()
+        )
+        modlist_embed.add_field(name="Trade mods", value = "cargobay, computer, rush, tradeburst, shipdrone, offload, beam, entrust, recall, dispatch", inline=True)
+        modlist_embed.add_field(name="Mining mods", value = "miningboost, hydrobay, enrich, remote, hydroupload, miningunity, crunch, genesis, minedrone, hydrorocket", inline=True)
+        modlist_embed.add_field(name="Weapon mods", value = "battery, laser, mass, dual, barrage, dart", inline=False)
+        modlist_embed.add_field(name="Shield mods", value = "alpha, delta, passive, omega, mirror, blast, area", inline=True)
+        modlist_embed.add_field(name="Support mods", value = "emp, teleport, rsextender, repair, warp, unity, sanctuary, stealth, fortify, impulse, rocket, salvage, suppress, destiny, barrier, vengeance, deltarocket, leap, bond, alphadrone, omegarocket, suspend, remotebomb", inline=False)
+        msg = await ctx.send(embed=modlist_embed)
+        full_mods_raw = "cargobay computer rush tradeburst shipdrone offload beam entrust recall dispatch miningboost hydrobay enrich remote hydroupload miningunity crunch genesis minedrone hydrorocket battery laser mass dual barrage dart alpha delta passive omega mirror blast area emp teleport rsextender repair warp unity sanctuary stealth fortify impulse rocket salvage suppress destiny barrier vengeance deltarocket leap bond alphadrone omegarocket suspend remotebomb"
+        full_mods_str = full_mods_raw.strip(',')
+        full_mods = full_mods_str.split(" ")
+        print(full_mods)
+        await asyncio.sleep(80)
+        await ctx.message.delete()
+        await msg.delete()
 
 
     @commands.group(invoke_without_command=True, help="Add, edit, show, and delete ships, type !ws for more details")
@@ -157,19 +181,20 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
         ws_embed.add_field(name='Add Ship', value='!ws add bs (example)', inline=True)
         ws_embed.add_field(name='Show Ship', value='!ws show miner (example)', inline=True)
         ws_embed.add_field(name='Delete Ship', value='!ws delete ts (example)', inline=True)
-        ws_embed.add_field(name='Next Steps', value='for adding (use can use the add command to edit your ships) ships, add the mods listed on your ship (just list the mod, the Hades Star Compendium Bot will fill the level), but for show and delete, just enter the name of the ship you want to see/delete', inline=False)
+        ws_embed.add_field(name='Next Steps', value='for adding (use can use the add command to edit your ships) ships, add the mods (use the !modlist command for a list of mods because the API is weird) listed on your ship (just list the mod, the Hades Star Compendium Bot will fill the level), but for show and delete, just enter the name of the ship you want to see/delete', inline=False)
         msg = await ctx.send(embed=ws_embed)
-        await asyncio.sleep(40)
+        await asyncio.sleep(80)
         await ctx.message.delete()
         await msg.delete()
         
 
-    @ws.command()
+    @ws.command(help="Adds/edits a ship to a players WS fleet")
     async def add(self, ctx, tag, *mods):
         msg = []
         user_id_raw = ctx.author.mention
         user_id = str(user_id_raw).strip('<>')
         user_id = user_id[1:]
+        user_id = user_id.strip('!')
         api_request_str = 'https://bot.hs-compendium.com/compendium/api/tech?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzODQ0ODExNTE0NzUxMjIxNzkiLCJndWlsZElkIjoiMzkzMTQ5NjIxNDYwOTI2NDY0IiwiaWF0IjoxNTk0MjYzMDU2LCJleHAiOjE2MjU4MjA2NTYsInN1YiI6ImFwaSJ9.pokmGiqTNIz0VztPrXhvM_xofWzuOYO1DSA2zTwP01s&userid=' + user_id
         #print(api_request_str)
         api_request = requests.get(api_request_str)
@@ -219,9 +244,94 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
                     msg.append(await ctx.send("You have too few mods for your current ts"))
                     msg.append(await ctx.send(f"You can have only {int(ts_mod_level)} mods, not {len(mods)}")) 
                     correct_mods = False     
+        # Check if the names are correct, with proper tags for each ship
+        #full_mods = "cargobay computer rush tradeburst shipdrone offload beam entrust recall dispatch miningboost hydrobay enrich remote hydroupload miningunity crunch genesis minedrone hydrorocket battery laser mass dual barrage dart alpha delta passive omega mirror blast area emp teleport rsextender repair warp unity sanctuary stealth fortify impulse rocket salvage suppress destiny barrier vengeance deltarocket leap bond alphadrone omegarocket suspend remotebomb"
+        trade_mods = "cargobay computer rush tradeburst shipdrone offload beam entrust recall dispatch"
+        mining_mods = "miningboost hydrobay enrich remote hydroupload miningunity crunch genesis minedrone hydrorocket"
+        weapon_mods = "battery laser mass dual barrage dart"
+        shield_mods = "alpha delta passive omega mirror blast area"
+        support_mods = "emp teleport rsextender repair warp unity sanctuary stealth fortify impulse rocket salvage suppress destiny barrier vengeance deltarocket leap bond alphadrone omegarocket suspend remotebomb"
+        trade, mine, weapon, shield, support = 0, 0, 0, 0, 0
+        for mod in mods:
+            if(trade_mods.find(mod) != -1):
+                trade += 1
+            elif(mining_mods.find(mod) != -1):
+                mine += 1
+            elif(weapon_mods.find(mod) != -1):
+                weapon += 1
+            elif(shield_mods.find(mod) != -1):
+                shield += 1
+            elif(support_mods.find(mod) != -1):
+                support += 1
+            else:
+                correct_mods = False
+        print("trade:", trade, " mining:", mine, " weapon:", weapon, " shield:", shield, " support:", support)
+        if(tag == 'bs'): # 1 weapon, 1 shield, n support
+            print("bs")
+            if(weapon != 1):
+                correct_mods = False
+            if(shield != 1):
+                correct_mods = False
+            if(support != int(bs_mod_level)-1):
+                correct_mods = False
+        elif(tag == 'miner'): # 1 support (level 3+), n mining
+            print("miner")
+            if(int(miner_mod_level) < 3):
+                if(mine != int(miner_mod_level)):
+                    correct_mods = False
+            else:
+                if(mine != int(miner_mod_level)-1):
+                    correct_mods = False
+                if(support != 1):
+                    correct_mods = False
+        elif(tag == 'ts'): # 1 support (level 3+), n trade
+            print("ts")
+            if(trade != int(ts_mod_level)):
+                correct_mods = False
+            if(int(ts_mod_level) < 3):
+                if(support != 0):
+                    correct_mods = False
+            else:
+                if(support != 1):
+                    correct_mods = False
+        new_mods = []
+        for mod in mods:
+            user_id_raw = ctx.author.mention
+            user_id = str(user_id_raw).strip('<>')
+            user_id = user_id[1:]
+            print(user_id)
+            api_request_str = os.getenv('API_KEY_REQUEST') + user_id
+            api_request = requests.get(api_request_str)
+            #print(api_request.text)
+            text_api = str(api_request.text)
+            print(text_api.find(mod))
+            raw_data = None
+            if (text_api.find(mod) != -1):
+                raw_data = (text_api[text_api.find(mod):][:text_api[text_api.find(mod):].index('}')+1])
+            if(raw_data == None):
+                correct_mods = False
+            else:
+                data = raw_data[len(mod) + 11 : ]
+                data = data[:data.index(",")]
+                mod = mod + data
+                new_mods.append(mod)
+                print(mod)
+        mods = new_mods
+        
         if(correct_mods):
-            #print(tag, mods)
+            # Here are the current names for the mods:
+            # Trade: cargobay, computer, rush, tradeburst, shipdrone, offload, beam, entrust, recall, dispatch
+            # Mining: miningboost, hydrobay, enrich, remote, hydroupload, miningunity, crunch, genesis, minedrone, hydrorocket
+            # Weapons: battery, laser, mass, dual, barrage, dart
+            # Shields: alpha, delta, passive, omega, mirror, blast, area
+            # Support: emp, teleport, rsextender, repair, warp, unity, sanctuary, stealth, fortify, impulse, rocket, salvage, suppress, destiny, barrier, vengeance, deltarocket, leap, bond, alphadrone, omegarocket, suspend, remotebomb
+
+            # change mods to have a number after them, representing the mod level
+            
+
+
             # Tag represents the ship, mods represent what's present on the ship
+
             db = sqlite3.connect('main.sqlite')
             cursor = db.cursor()
             # Get the stored object from database
@@ -286,11 +396,14 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
             )
             final_embed.set_author(name=ctx.author.name)
             final_embed.add_field(name=f'The current {tag} of {ctx.author.name}', value=f'{" ".join(mods)}')
-            msg += await ctx.send(embed=final_embed)
+            msg.append(await ctx.send(embed=final_embed))
+        else:
+            msg.append(await ctx.send("The mods listed aren't correct, either you don't have those mods unlocked or you typed them in incorrectly. Use the !modlist command for a list of mods"))
         await asyncio.sleep(20)
         await ctx.message.delete()
         for ms in msg:
             await ms.delete()
+    
             
 
     @ws.command(help="Shows a player their bs/miner/ts")
@@ -373,30 +486,34 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
     async def delete(self, ctx, tag):
         db = sqlite3.connect('main.sqlite')
         cursor = db.cursor()
-        if (tag == 'bs'):
-            bs_sql = "SELECT battleship FROM main WHERE nickname=?"
-            cursor.execute(bs_sql, [(ctx.author.name)])
-            result = cursor.fetchone()
-            sql = "DELETE FROM main WHERE battleship = ? AND nickname = ?"
-            val = (result, ctx.author.name)
-            cursor.execute(sql, val)
-            msg = await ctx.send("Battleship deleted")
-        if (tag == 'miner'):
-            miner_sql = "SELECT miner FROM main WHERE nickname=?"
-            cursor.execute(miner_sql, [(ctx.author.name)])
-            result = cursor.fetchone()
-            sql = "DELETE FROM main WHERE miner = ? AND nickname = ?"
-            val = (result, ctx.author.name)
-            cursor.execute(sql, val)
-            msg = await ctx.send("Miner deleted")
-        if (tag == 'ts'):
-            ts_sql = "SELECT transport FROM main WHERE nickname=?"
-            cursor.execute(ts_sql, [(ctx.author.name)])
-            result = cursor.fetchone()
-            sql = "DELETE FROM main WHERE transport = ? AND nickname = ?"
-            val = (result, ctx.author.name)
-            cursor.execute(sql, val)
-            msg = await ctx.send("Transport deleted")
+        if(tag == 'bs' or tag == 'miner' or tag == 'ts'):
+            if (tag == 'bs'):
+                bs_sql = "SELECT battleship FROM main WHERE nickname=?"
+                cursor.execute(bs_sql, [(ctx.author.name)])
+                result = cursor.fetchone()
+                if(len(result) != 0):
+                    sql = "UPDATE main SET battleship = ? WHERE nickname = ?"
+                    val = (None, ctx.author.name)
+                    cursor.execute(sql, val)
+                    msg = await ctx.send("Battleship deleted")
+            if (tag == 'miner'):
+                miner_sql = "SELECT miner FROM main WHERE nickname=?"
+                cursor.execute(miner_sql, [(ctx.author.name)])
+                result = cursor.fetchone()
+                if(len(result) != 0):
+                    sql = "UPDATE main SET miner = ? WHERE nickname = ?"
+                    val = (None, ctx.author.name)
+                    cursor.execute(sql, val)
+                    msg = await ctx.send("Miner deleted")
+            if (tag == 'ts'):
+                ts_sql = "SELECT transport FROM main WHERE nickname=?"
+                cursor.execute(ts_sql, [(ctx.author.name)])
+                result = cursor.fetchone()
+                if(len(result) != 0):
+                    sql = "UPDATE main SET transport = ? WHERE nickname=?"
+                    val = (None, ctx.author.name)
+                    cursor.execute(sql, val)
+                    msg = await ctx.send("Transport deleted")
         else:
             msg = await ctx.send("Invalid option, either bs/miner/ts")
         db.commit()
@@ -413,7 +530,7 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
         cursor = db.cursor()
         sql = "SELECT nickname FROM main WHERE nickname=?"
         cursor.execute(sql, [(ctx.author.name)])
-        result = cursor.fetchall()
+        #result = cursor.fetchall()
         user_nickname = ctx.author.name
         string_message = " ".join(message)
         sql = ("INSERT INTO main(nickname, questions) VALUES(?,?)")
@@ -431,21 +548,47 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
         await msg.delete()
 
     @commands.command()
-    async def test_api(self, ctx, message):
+    async def getlevel(self, ctx, message):
         user_id_raw = ctx.author.mention
+        print(user_id_raw)
         user_id = str(user_id_raw).strip('<>')
+        print(user_id)
         user_id = user_id[1:]
-        api_request_str = 'https://bot.hs-compendium.com/compendium/api/tech?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzODQ0ODExNTE0NzUxMjIxNzkiLCJndWlsZElkIjoiMzkzMTQ5NjIxNDYwOTI2NDY0IiwiaWF0IjoxNTk0MjYzMDU2LCJleHAiOjE2MjU4MjA2NTYsInN1YiI6ImFwaSJ9.pokmGiqTNIz0VztPrXhvM_xofWzuOYO1DSA2zTwP01s&userid=' + user_id
+        print(user_id)
+        user_id = user_id.strip('!')
+        print(user_id)
+        api_request_str = os.getenv('API_KEY_REQUEST') + user_id
         #print(api_request_str)
         api_request = requests.get(api_request_str)
-        print(api_request.text)
+        #print(api_request.text)
         text_api = str(api_request.text)
         print(text_api.find(message))
         if (text_api.find(message) != -1):
-            print(text_api[text_api.find(message):][:text_api[text_api.find(message):].index('}')+1])
+            raw_data = (text_api[text_api.find(message):][:text_api[text_api.find(message):].index('}')+1])
             await ctx.send(text_api[text_api.find(message):][:text_api[text_api.find(message):].index('}')+1])
+            print(raw_data)
+            #cargobay":{"level":8,"ws":625}
+            # cut the message + 11
+            # cut everything but one
+            data = raw_data[len(message) + 11 : ]
+            data = data[:data.index(",")]
+            print(data)
+
         else:
-            await ctx.send("The level is 0")
+            await ctx.send("I do not have information on that module")
+
+    @commands.command()
+    async def getapi(self, ctx):
+        user_id_raw = ctx.author.mention
+        user_id = str(user_id_raw).strip('<>')
+        user_id = user_id[1:]
+        user_id = user_id.strip('!')
+        api_request_str = os.getenv('API_KEY_REQUEST') + user_id
+        api_request = requests.get(api_request_str)
+        print(api_request.text)
+
+
+
             
 
 
