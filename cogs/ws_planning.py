@@ -128,8 +128,6 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         sql = "SELECT nickname FROM main WHERE nickname=?"
         cursor.execute(sql, [(ctx.author.name)])
         result = cursor.fetchall()
-        #user_name = ctx.author.mention
-        #user_nickname = ctx.author.name
         if len(result) == 0:
             msg = await ctx.send("You are not in any WS Rosters")
         else:
