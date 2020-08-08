@@ -174,21 +174,24 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
             results = cursor.fetchall()
             if len(results) != 0:
                 people = []
+                await ctx.send(f'The current roster for WS Roster #{message}')
                 for result in results:
                     result = str(result)
                     result = result[2:]
                     result = result[:len(result)-3]
                     people.append(result)
-                roster_embed = discord.Embed(
-                    description = (f'The current roster for WS Roster #{message}'),
-                    colour = discord.Colour.teal()
-                )
-                roster_embed.set_footer(text='Best of luck on this WS!')
+
+                #roster_embed = discord.Embed(
+                #    description = (f'The current roster for WS Roster #{message}'),
+                #    colour = discord.Colour.teal()
+                #)
+                #roster_embed.set_footer(text='Best of luck on this WS!')
                 number = 1
                 for person in people:
-                    roster_embed.add_field(name=f'Player #{number}', value=f'{person}', inline=False)
+                    #roster_embed.add_field(name=f'Player #{number}', value=f'{person}', inline=False)
+                    await ctx.send(f'{number}. {person}')
                     number += 1
-                await ctx.send(embed=roster_embed)
+                #await ctx.send(embed=roster_embed)
             else:
                 await ctx.send(f"Nobody is in WS Roster #{message}, type !in {message} to join the roster")
         else:
