@@ -188,14 +188,11 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                 for person in people:
                     roster_embed.add_field(name=f'Player #{number}', value=f'{person}', inline=False)
                     number += 1
-                msg = await ctx.send(embed=roster_embed)
+                await ctx.send(embed=roster_embed)
             else:
-                msg = await ctx.send(f"Nobody is in WS Roster #{message}, type !in {message} to join the roster")
+                await ctx.send(f"Nobody is in WS Roster #{message}, type !in {message} to join the roster")
         else:
-            msg = await ctx.send("Invalid roster, it can either be 1 or 2")
-        await asyncio.sleep(20)
-        await ctx.message.delete()
-        await msg.delete()
+            await ctx.send("Invalid roster, it can either be 1 or 2")
 
     @commands.command(help="Use this command to clear the WS Queue, to start the WS")
     async def start(self, ctx, message, confirm=None):

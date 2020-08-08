@@ -176,7 +176,7 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
             description = 'WS Setup Commands',
             colour = discord.Colour.green()
         )
-        ws_embed.set_footer(text='Example: !ws add bs battery omega teleport remoterepair timewarp alpharocket \nExample: !ws show miner')
+        ws_embed.set_footer(text='Example: !ws add bs battery omega teleport repair warp rocket \nExample: !ws show miner')
         ws_embed.set_author(name=ctx.author)
         ws_embed.add_field(name='Add Ship', value='!ws add bs (example)', inline=True)
         ws_embed.add_field(name='Show Ship', value='!ws show miner (example)', inline=True)
