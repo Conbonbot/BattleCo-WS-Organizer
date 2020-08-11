@@ -199,12 +199,14 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
 
     @commands.command(help="Use this command to clear the WS Queue, to start the WS")
     async def start(self, ctx, message, confirm=None):
+        msg = []
         if (message == '1') or (message == '2'):
             db = sqlite3.connect('roster.sqlite')
             cursor = db.cursor()
             sql = "SELECT roster FROM main WHERE roster=?"
             cursor.execute(sql, message)
             results = cursor.fetchall()
+            print(results)
             if (len(results) != 0):
                 if(len(results) % 5 == 0) and (len(results) < 16):
                     sql = "DELETE FROM main WHERE roster=?"
@@ -212,23 +214,24 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                     db.commit()
                     cursor.close()
                     db.close()
-                    msg = await ctx.send(f"The WS roster #{message} has been cleared, best of luck!")
+                    msg.append(await ctx.send(f"The WS roster #{message} has been cleared, best of luck!"))
                 elif(confirm == 'clear'):
                     sql = "DELETE FROM main WHERE roster=?"
                     cursor.execute(sql, message)
                     db.commit()
                     cursor.close()
                     db.close()
-                    msg = await ctx.send(f"The WS roster #{message} has been cleared, best of luck!")
+                    msg.append(await ctx.send(f"The WS roster #{message} has been cleared, best of luck!"))
                 else:
-                    msg = await ctx.send(f"The WS Roster #{message} doesn't have 5, 10, or 15, people. However, you can override this by adding clear to this command")
+                    msg.append(await ctx.send(f"The WS Roster #{message} doesn't have 5, 10, or 15, people. However, you can override this by adding clear to this command"))
             else:
-                msg = await ctx.send(f"There is nobody in WS Roster #{message}")
+                msg.append(await ctx.send(f"There is nobody in WS Roster #{message}"))
         else:
-            msg = await ctx.send("There are only two rosters, so use !start 1 or !start 2")
+            msg.append(await ctx.send("There are only two rosters, so use !start 1 or !start 2"))
         await asyncio.sleep(20)
         await ctx.message.delete()
-        await msg.delete()
+        for ms in msg:
+            await ms.delete()
 
                     
 

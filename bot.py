@@ -17,13 +17,16 @@ bot = commands.Bot(command_prefix='!')
 # Ready
 @bot.event
 async def on_ready():
-    db = sqlite3.connect('roster.sqlite')
+    db = sqlite3.connect('polls.sqlite')
     cursor = db.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS main(
-            name TEXT,
-            nickname TEXT,
-            roster TEXT
+            number INTEGER,
+            question TEXT,
+            yes INTEGER,
+            no INTEGER,
+            yes_people TEXT,
+            no_people TEXT
         )
     ''')
     print(f'{bot.user.name} has connected to Discord!')
@@ -31,7 +34,7 @@ async def on_ready():
 
 
 
-intital_extensions = ['cogs.moderation', 'cogs.ws_planning']
+intital_extensions = ['cogs.moderation', 'cogs.ws_planning', 'cogs.poll']
 
 if __name__ == '__main__':
     for extension in intital_extensions:
