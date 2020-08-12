@@ -38,7 +38,8 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         no = cursor.fetchall()
 
         full = np.array([questions, numbers, yes, no]) # 0 is questions, 1 is numbers, 2 is yes, 3 is no
-        for i in range(len(full)-1):
+        print(full, len(full)-1)
+        for i in range(len(questions)):
             question_ = str(full[0][i])
             question_ = question_[2:-2]
             
@@ -105,9 +106,7 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                     sql = "UPDATE main SET no = ? WHERE number = ?"
                     val = (num, number)
                     cursor.execute(sql,val)
-            
-
-
+            msg = await ctx.send("Vote entered successfully")
             db.commit()
             cursor.close()
             db.close()
@@ -128,11 +127,11 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
             colour = discord.Colour.dark_blue()
         )
         poll_embed.set_author(name=ctx.author)
-        poll_embed.add_field(name='Start Poll', value="!poll start question ", inline=True)
-        poll_embed.add_field(name='See Polls', value='!polls', inline=True)
-        poll_embed.add_field(name='See Specific Poll', value='!poll show PollNumber')
-        poll_embed.add_field(name='Vote on a Poll', value='!vote PollNumber Y/N', inline=False)
-        poll_embed.add_field(name='Remove your vote', value='!poll remove PollNumber', inline=True)
+        poll_embed.add_field(name='Start Poll', value="!poll start question ", inline=True) # Done
+        poll_embed.add_field(name='See Polls', value='!polls', inline=True) # Done
+        poll_embed.add_field(name='See Specific Poll', value='!poll show PollNumber') # Done
+        poll_embed.add_field(name='Vote on a Poll', value='!vote PollNumber Y/N', inline=False) # Done
+        poll_embed.add_field(name='Remove your vote from a poll', value='!poll remove PollNumber', inline=True)
         poll_embed.add_field(name='Delete Poll', value='!poll delete PollNumber', inline=True)
         msg = await ctx.send(embed=poll_embed)
         await asyncio.sleep(80)
@@ -181,24 +180,28 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         db = sqlite3.connect('polls.sqlite')
         cursor = db.cursor()
 
+        #print(number, len(number), len([number]))
         checking_sql = "SELECT question FROM main WHERE number = ?"
-        cursor.execute(checking_sql, number)
-        results = cursor.fetchall()
+        cursor.execute(checking_sql, [(number)])
+        results = cursor.fetchone()
+        #print(results)
+
+
         if len(results) != 0:
             question_sql = "SELECT question FROM main WHERE number = ?"
-            cursor.execute(question_sql, number)
+            cursor.execute(question_sql, [(number)])
             question = cursor.fetchone()
             question = str(question)
             question = question[2:-3]
 
             yes_sql = "SELECT yes FROM main WHERE number = ?"
-            cursor.execute(yes_sql, number)
+            cursor.execute(yes_sql, [(number)])
             yes = cursor.fetchone()
             yes = str(yes)
             yes = yes[1:-2]
 
             no_sql = "SELECT no FROM main WHERE number = ?"
-            cursor.execute(no_sql, number)
+            cursor.execute(no_sql, [(number)])
             no = cursor.fetchone()
             no = str(no)
             no = no[1:-2]
