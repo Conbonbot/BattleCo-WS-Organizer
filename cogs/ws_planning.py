@@ -6,12 +6,21 @@ from discord.ext import commands
 import discord
 import requests
 import asyncio
+import numpy as np
+from discord.utils import get
 
 class BattleCoWSCogs(commands.Cog, name='BattleCo'):
 
 
     def __init__(self, bot):
         self.bot = bot
+
+    # Test role addition
+    @commands.command(pass_context=True)
+    async def addrole(self, ctx):
+        member = ctx.message.author
+        role = get(member.guild.roles, name="Bot Testing Role")
+        await member.add_roles(role)
     
     @commands.command(aliases=['in'], help="Type !in (yes I know it says !_in but !in works) followed by either a 1 or a 2 to join a roster")
     async def _in(self, ctx, message):

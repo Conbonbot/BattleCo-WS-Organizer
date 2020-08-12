@@ -7,6 +7,7 @@ import discord
 import requests
 import asyncio
 import numpy as np
+from discord.utils import get
 
 class BattleCoWSCogs(commands.Cog, name='BattleCo'):
 

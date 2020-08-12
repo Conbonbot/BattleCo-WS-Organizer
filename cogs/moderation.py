@@ -7,6 +7,8 @@ from discord.ext import commands
 import discord
 import requests
 import asyncio
+import numpy as np
+from discord.utils import get
 
 class BattleCoCogs(commands.Cog, name='BattleCo'):
 
@@ -14,6 +16,8 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
         self.bot = bot
 
 
+    
+    
     
 
 

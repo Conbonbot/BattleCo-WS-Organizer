@@ -8,11 +8,15 @@ import discord
 import asyncio
 import sys
 import requests
+import numpy as np
+from discord.utils import get
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 bot = commands.Bot(command_prefix='!')
+
+
  
 # Ready
 @bot.event
