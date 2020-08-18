@@ -547,7 +547,7 @@ class BattleCoCogs(commands.Cog, name='BattleCo'):
 
         msg = await ctx.send("Question has been stored to database")
         
-        await asyncio.sleep(5)
+        await asyncio.sleep(50)
         await ctx.message.delete()
         await msg.delete()
 
