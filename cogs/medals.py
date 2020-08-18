@@ -265,6 +265,13 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                         final_messages += (f"You have {amount} Destined medals!!! Certainly a pyromanic!")
                     else:
                         final_messages += (f"This is your first Destined medal! Wear it with honor")
+                elif(medal == "strategist"):
+                        final_messages += (f"Whether on or off the the WS, they provided exceptional help and input with a WS match\n")
+                        final_messages += (f"Here is your Strategist medal :military_medal:\n")
+                        if(int(amount) > 1):
+                            final_messages += (f"You have {amount} Strategist medals!!! That's some dedication to be one of the brains behind the WS!!")
+                        else:
+                            final_messages += (f"You have {amount} Strategist medals!!! Wear it with honor Captain.")
                 await ctx.send(final_messages)
             else:
                 msg = await ctx.send("Incorrect Medal")

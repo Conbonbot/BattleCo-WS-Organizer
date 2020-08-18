@@ -31,8 +31,8 @@ async def on_ready():
             destined INTEGER
         )
     ''')
-    addColumn = "ALTER TABLE main ADD COLUMN strategist INTEGER"
-    cursor.execute(addColumn)
+    #addColumn = "ALTER TABLE main ADD COLUMN strategist INTEGER"
+    #cursor.execute(addColumn)
     print(f'{bot.user.name} has connected to Discord!')
     return await bot.change_presence(activity=discord.Activity(type=1, name="BattleCo"))
 
