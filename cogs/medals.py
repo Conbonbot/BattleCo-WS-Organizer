@@ -41,7 +41,7 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
             await ctx.message.delete()
             await msg.delete()
         if(correct):
-            if(medal == "victor" or medal == "riser" or medal == "destined"):
+            if(medal == "victor" or medal == "riser" or medal == "destined" or medal == "strategist"):
                 members = []
                 print(possible_roles[0])
                 for member in ctx.guild.members:
@@ -62,6 +62,8 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                             sql = "INSERT INTO main(nickname,riser) VALUES(?,?)" 
                         elif(medal == "destined"):
                             sql = "INSERT INTO main(nickname,destined) VALUES(?,?)"
+                        elif(medal == "strategist"):
+                            sql = "INSERT INTO main(nickname,destined) VALUES(?,?)"
                         val = (player, 1)
                         cursor.execute(sql,val)
                         amount = 1
@@ -72,6 +74,8 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                             sql = "SELECT riser from main WHERE nickname=?"
                         elif(medal == "destined"):
                             sql = "SELECT destined from main WHERE nickname=?"
+                        elif(medal == "strategist"):
+                            sql = "SELECT strategist from main WHERE nickname=?"
                         val = [(player)]
                         cursor.execute(sql,val)
                         amount = cursor.fetchone()
@@ -84,6 +88,8 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                                 sql = "UPDATE main SET riser=? WHERE nickname=?"
                             elif(medal == "destined"):
                                 sql = "UPDATE main SET destined=? WHERE nickname=?"
+                            elif(medal == "strategist"):
+                                sql = "UPDATE main SET strategist=? WHERE nickname=?"
                             val = (1, player)
                             amount = 1
                             cursor.execute(sql,val)
@@ -94,6 +100,8 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                                 sql = "UPDATE main SET riser=? WHERE nickname=?"
                             elif(medal == "destined"):
                                 sql = "UPDATE main SET destined=? WHERE nickname=?"
+                            elif(medal == "strategist"):
+                                sql = "UPDATE main SET strategist=? WHERE nickname=?"
                             val = (int(amount)+1, player)
                             cursor.execute(sql,val) 
                             amount = int(amount)+1
@@ -129,6 +137,13 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                             final_messages += (f"You have {amount} Destined medals!!! Certainly a pyromanic!")
                         else:
                             final_messages += (f"This is your first Destined medal! Wear it with honor")
+                    elif(medal == "strategist"):
+                        final_messages += (f"Whether on or off the the WS, they provided exceptional help and input with a WS match")
+                        final_messages += (f"Here is your Strategist medal :military_medal:")
+                        if(int(amount) > 1):
+                            final_messages += (f"You have {amount} Strategist medals!!! That's some dedication to be one of the brains behind the WS!!")
+                        else:
+                            final_messages += (f"You have {amount} Strategist medals!!! Wear it with honor Captain.")
                     await ctx.send(final_messages)
                 await asyncio.sleep(60)
                 await ctx.message.delete()
@@ -161,7 +176,7 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
             await msg.delete()
         msg = []
         if(correct):
-            if(medal == "victor" or medal == "riser" or medal == "destined"):
+            if(medal == "victor" or medal == "riser" or medal == "destined" or medal == "strategist"):
                 db = sqlite3.connect('medals.sqlite')
                 cursor = db.cursor()
                 sql = "SELECT nickname FROM main WHERE nickname=?"
@@ -175,6 +190,8 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                         sql = "INSERT INTO main(nickname,riser) VALUES(?,?)" 
                     elif(medal == "destined"):
                         sql = "INSERT INTO main(nickname,destined) VALUES(?,?)"
+                    elif(medal == "strategist"):
+                        sql = "INSERT INTO main(nickname,destined) VALUES(?,?)"
                     val = (player, 1)
                     cursor.execute(sql,val)
                     amount = 1
@@ -185,6 +202,8 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                         sql = "SELECT riser from main WHERE nickname=?"
                     elif(medal == "destined"):
                         sql = "SELECT destined from main WHERE nickname=?"
+                    elif(medal == "strategist"):
+                        sql = "SELECT strategist from main WHERE nickname=?"
                     val = [(player)]
                     cursor.execute(sql,val)
                     amount = cursor.fetchone()
@@ -197,6 +216,8 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                             sql = "UPDATE main SET riser=? WHERE nickname=?"
                         elif(medal == "destined"):
                             sql = "UPDATE main SET destined=? WHERE nickname=?"
+                        elif(medal == "strategist"):
+                            sql = "UPDATE main SET strategist=? WHERE nickname=?"
                         val = (1, player)
                         amount = 1
                         cursor.execute(sql,val)
@@ -207,6 +228,8 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                             sql = "UPDATE main SET riser=? WHERE nickname=?"
                         elif(medal == "destined"):
                             sql = "UPDATE main SET destined=? WHERE nickname=?"
+                        elif(medal == "strategist"):
+                            sql = "UPDATE main SET strategist=? WHERE nickname=?"
                         val = (int(amount)+1, player)
                         cursor.execute(sql,val) 
                         amount = int(amount)+1
