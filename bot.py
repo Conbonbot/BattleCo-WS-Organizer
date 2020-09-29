@@ -36,6 +36,14 @@ async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
     return await bot.change_presence(activity=discord.Activity(type=1, name="BattleCo"))
 
+@bot.event
+async def on_message(ctx):
+    print(ctx)
+    print(ctx.content)
+    if(ctx.content.find('The `roster` command is disabled.') != -1):
+        await ctx.delete()
+
+
 
 
 intital_extensions = ['cogs.moderation', 'cogs.ws_planning', 'cogs.poll', 'cogs.medals']
