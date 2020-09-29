@@ -271,7 +271,7 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                         if(int(amount) > 1):
                             final_messages += (f"You have {amount} Strategist medals!!! That's some dedication to be one of the brains behind the WS!!")
                         else:
-                            final_messages += (f"You have {amount} Strategist medals!!! Wear it with honor Captain.")
+                            final_messages += (f"This is your first Strategist medal!!! Wear it with honor Captain.")
                 await ctx.send(final_messages)
             else:
                 msg = await ctx.send("Incorrect Medal")

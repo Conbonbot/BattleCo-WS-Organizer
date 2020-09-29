@@ -196,10 +196,14 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                 #)
                 #roster_embed.set_footer(text='Best of luck on this WS!')
                 number = 1
+                stuff = ""
                 for person in people:
                     #roster_embed.add_field(name=f'Player #{number}', value=f'{person}', inline=False)
-                    await ctx.send(f'{number}. {person}')
+                    stuff += (f'{number}. {person}')
+                    stuff += "\n"
+                    #await ctx.send(f'{number}. {person}')
                     number += 1
+                await ctx.send(stuff)
                 #await ctx.send(embed=roster_embed)
             else:
                 await ctx.send(f"Nobody is in WS Roster #{message}, type !in {message} to join the roster")
