@@ -79,7 +79,7 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         await asyncio.sleep(20)
         await ctx.message.delete()
         for ms in msg:
-            ms.delete()
+            await ms.delete()
         
 
             
