@@ -21,18 +21,17 @@ bot = commands.Bot(command_prefix='!')
 # Ready
 @bot.event
 async def on_ready():
-    db = sqlite3.connect('medals.sqlite')
+    db = sqlite3.connect('results.sqlite')
     cursor = db.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS main(
-            nickname TEXT,
-            victor INTEGER,
-            riser INTEGER,
-            destined INTEGER
+            enemy TEXT,
+            type TEXT,
+            result TEXT
         )
     ''')
-    #addColumn = "ALTER TABLE main ADD COLUMN strategist INTEGER"
-    #cursor.execute(addColumn)
+    addColumn = "ALTER TABLE main ADD COLUMN relics TEXT"
+    cursor.execute(addColumn)
     print(f'{bot.user.name} has connected to Discord!')
     return await bot.change_presence(activity=discord.Activity(type=1, name="BattleCo"))
 
@@ -46,7 +45,7 @@ async def on_message(ctx):
 
 
 
-intital_extensions = ['cogs.moderation', 'cogs.ws_planning', 'cogs.poll', 'cogs.medals']
+intital_extensions = ['cogs.moderation', 'cogs.ws_planning', 'cogs.poll', 'cogs.medals', 'cogs.results']
 
 if __name__ == '__main__':
     for extension in intital_extensions:

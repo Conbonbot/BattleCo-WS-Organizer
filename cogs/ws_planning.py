@@ -9,11 +9,14 @@ import asyncio
 import numpy as np
 from discord.utils import get
 
+def what(msg):
+        return msg
 class BattleCoWSCogs(commands.Cog, name='BattleCo'):
 
 
     def __init__(self, bot):
         self.bot = bot
+
 
     # Test role addition
     @commands.command(pass_context=True)
@@ -23,7 +26,8 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         await member.add_roles(role)
     
     @commands.command(aliases=['in'], help="Type !in (yes I know it says !_in but !in works) followed by either a 1 or a 2 to join a roster")
-    async def _in(self, ctx, message):
+    async def _in(self, ctx, message, person=None):
+        print(ctx, message, person, what("hello"))
         if (message == '1') or (message == '2'):
             db = sqlite3.connect('roster.sqlite')
             cursor = db.cursor()
@@ -245,6 +249,7 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         await ctx.message.delete()
         for ms in msg:
             await ms.delete()
+    
 
                     
 
