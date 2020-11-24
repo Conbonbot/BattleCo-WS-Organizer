@@ -75,10 +75,11 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
             for text in result:
                 total_text += text + " "
             total_text += '\n'
-        msg = await ctx.send(total_text)
+        msg.append(await ctx.send(total_text))
         await asyncio.sleep(20)
         await ctx.message.delete()
-        await msg.delete()
+        for ms in msg:
+            ms.delete()
         
 
             

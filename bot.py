@@ -27,11 +27,12 @@ async def on_ready():
         CREATE TABLE IF NOT EXISTS main(
             enemy TEXT,
             type TEXT,
-            result TEXT
+            result TEXT,
+            relics TEXT
         )
     ''')
-    addColumn = "ALTER TABLE main ADD COLUMN relics TEXT"
-    cursor.execute(addColumn)
+    #addColumn = "ALTER TABLE main ADD COLUMN relics TEXT"
+    #cursor.execute(addColumn)
     print(f'{bot.user.name} has connected to Discord!')
     return await bot.change_presence(activity=discord.Activity(type=1, name="BattleCo"))
 
