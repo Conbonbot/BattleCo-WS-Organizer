@@ -38,7 +38,6 @@ async def on_ready():
 
 @bot.event
 async def on_message(ctx):
-    print(ctx.content)
     if(ctx.content.find('The `roster` command is disabled.') != -1):
         await ctx.delete()
     await bot.process_commands(ctx)
