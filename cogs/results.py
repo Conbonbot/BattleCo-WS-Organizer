@@ -72,9 +72,10 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         msg.append(await ctx.send(f"Here are the past {amount} WS and their outcomes:"))
         total_text = ""
         for result in results:
+            total_text += "```BattleCo vs. "
             for text in result:
                 total_text += text + " "
-            total_text += '\n'
+            total_text += '```'
         msg.append(await ctx.send(total_text))
         await asyncio.sleep(20)
         await ctx.message.delete()
