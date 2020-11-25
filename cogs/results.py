@@ -17,7 +17,7 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         self.bot = bot
 
     @commands.command(help="Input a WS results, of the form enemy type(15v15) relic-count")
-    async def result(self, ctx, enemy, ws_type, relics):
+    async def ws_result(self, ctx, enemy, ws_type, relics):
         if(ws_type == "15v15" or ws_type == "10v10" or ws_type == "5v5"):
             relic_count = relics.split("-")
             print(relic_count[0], relic_count[1])
