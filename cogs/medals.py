@@ -286,7 +286,7 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         names = []
         msg = []
         for member in ctx.guild.members:
-            if(str(member.name).find(name) != -1):
+            if(str(member.name).lower().find(name) != -1):
                 names.append(member.name)
         if(len(names) == 0):
             msg.append(await ctx.send(f"No users found with {name} in their name"))

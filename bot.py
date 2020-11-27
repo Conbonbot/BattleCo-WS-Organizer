@@ -21,14 +21,13 @@ bot = commands.Bot(command_prefix='!')
 # Ready
 @bot.event
 async def on_ready():
-    db = sqlite3.connect('results.sqlite')
+    db = sqlite3.connect('roster.sqlite')
     cursor = db.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS main(
-            enemy TEXT,
-            type TEXT,
-            result TEXT,
-            relics TEXT
+            name TEXT,
+            nickname TEXT,
+            roster TEXT
         )
     ''')
     #addColumn = "ALTER TABLE main ADD COLUMN relics TEXT"
