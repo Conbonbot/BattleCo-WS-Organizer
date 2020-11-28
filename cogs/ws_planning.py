@@ -212,6 +212,7 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         
     @commands.command(aliases=['r'], help="Use this command (!roster) followed by either a 1 or a 2 to see who is in that WS Roster")
     async def roster(self, ctx, message=None):
+        msg = []
         if(message == None):
             message = '1'
         if (message == '1') or (message == '2'):
@@ -222,7 +223,7 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
             results = cursor.fetchall()
             if len(results) != 0:
                 people = []
-                await ctx.send(f'The current roster for WS Roster #{message}')
+                msg.append(await ctx.send(f'The current roster for WS Roster #{message}'))
                 for result in results:
                     result = str(result)
                     result = result[2:]
@@ -242,12 +243,16 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                     stuff += "\n"
                     #await ctx.send(f'{number}. {person}')
                     number += 1
-                await ctx.send(stuff)
+                msg.append(await ctx.send(stuff))
                 #await ctx.send(embed=roster_embed)
             else:
-                await ctx.send(f"Nobody is in WS Roster #{message}, type !in {message} to join the roster")
+                msg.append(await ctx.send(f"Nobody is in WS Roster #{message}, type !in {message} to join the roster"))
         else:
-            await ctx.send("Invalid roster, it can either be 1 or 2")
+            msg.append(await ctx.send("Invalid roster, it can either be 1 or 2"))
+        await asyncio.sleep(20)
+        await ctx.message.delete()
+        for ms in msg:
+            await ms.delete()
 
     @commands.command(help="Use this command to clear the WS Queue, to start the WS")
     async def start(self, ctx, message, confirm=None):
