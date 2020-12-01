@@ -249,7 +249,7 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                 msg.append(await ctx.send(f"Nobody is in WS Roster #{message}, type !in {message} to join the roster"))
         else:
             msg.append(await ctx.send("Invalid roster, it can either be 1 or 2"))
-        await asyncio.sleep(20)
+        await asyncio.sleep(1800)
         await ctx.message.delete()
         for ms in msg:
             await ms.delete()
