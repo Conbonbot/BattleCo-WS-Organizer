@@ -32,58 +32,55 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
     async def _in(self, ctx, message=None):
         print(ctx, message)
         print(ctx.author.name)
-        if(ctx.author.name == "Ocram"):
-            await ctx.send("nah, you aren't getting in this roster")
-        else:
-            if(message == None):
-                message = '1'
-            if (message == '1') or (message == '2'):
-                db = sqlite3.connect('roster.sqlite')
-                cursor = db.cursor()
-                sql = "SELECT nickname FROM main WHERE nickname=?"
-                cursor.execute(sql, [(ctx.author.name)])
-                result = cursor.fetchall()
-                user_name = ctx.author.mention
-                user_nickname = ctx.author.name
-                if len(result) == 0:
-                    sql = ("INSERT INTO main(name, nickname, roster) VALUES(?,?,?)")
-                    val = (user_name, user_nickname, message)
-                    cursor.execute(sql,val)
-                    sql = "SELECT nickname FROM main WHERE roster = ?"
-                    cursor.execute(sql, message)
-                    results = cursor.fetchall()
-                    if len(results) != 0:
-                        people = []
-                        for result in results:
-                            result = str(result)
-                            result = result[2:]
-                            result = result[:len(result)-3]
-                            people.append(result)
-                        roster_embed = discord.Embed(
-                            description = (f'The current roster for WS Roster #{message}'),
-                            colour = discord.Colour.teal()
-                        )
-                        roster_embed.set_footer(text='Best of luck on this WS!')
-                        number = 1
-                        for person in people:
-                            roster_embed.add_field(name=f'Player #{number}', value=f'{person}', inline=False)
-                            number += 1
-                        embed_msg = await ctx.send(embed=roster_embed)
-                        msg = await ctx.send(f"You have been added to WS Roster #{message}")
-                else:
-                    msg = await ctx.send("You are already in a WS Roster, type !out to leave your current WS Roster")
-                db.commit()
-                cursor.close()
-                db.close()
-                await asyncio.sleep(20)
-                await ctx.message.delete()
-                await msg.delete()
-                await embed_msg.delete()
+        if(message == None):
+            message = '1'
+        if (message == '1') or (message == '2'):
+            db = sqlite3.connect('roster.sqlite')
+            cursor = db.cursor()
+            sql = "SELECT nickname FROM main WHERE nickname=?"
+            cursor.execute(sql, [(ctx.author.name)])
+            result = cursor.fetchall()
+            user_name = ctx.author.mention
+            user_nickname = ctx.author.name
+            if len(result) == 0:
+                sql = ("INSERT INTO main(name, nickname, roster) VALUES(?,?,?)")
+                val = (user_name, user_nickname, message)
+                cursor.execute(sql,val)
+                sql = "SELECT nickname FROM main WHERE roster = ?"
+                cursor.execute(sql, message)
+                results = cursor.fetchall()
+                if len(results) != 0:
+                    people = []
+                    for result in results:
+                        result = str(result)
+                        result = result[2:]
+                        result = result[:len(result)-3]
+                        people.append(result)
+                    roster_embed = discord.Embed(
+                        description = (f'The current roster for WS Roster #{message}'),
+                        colour = discord.Colour.teal()
+                    )
+                    roster_embed.set_footer(text='Best of luck on this WS!')
+                    number = 1
+                    for person in people:
+                        roster_embed.add_field(name=f'Player #{number}', value=f'{person}', inline=False)
+                        number += 1
+                    embed_msg = await ctx.send(embed=roster_embed)
+                    msg = await ctx.send(f"You have been added to WS Roster #{message}")
             else:
-                msg = await ctx.send("Invalid roster selection, it can either be a 1 or 2")
-                await asyncio.sleep(20)
-                await ctx.message.delete()
-                await msg.delete()
+                msg = await ctx.send("You are already in a WS Roster, type !out to leave your current WS Roster")
+            db.commit()
+            cursor.close()
+            db.close()
+            await asyncio.sleep(20)
+            await ctx.message.delete()
+            await msg.delete()
+            await embed_msg.delete()
+        else:
+            msg = await ctx.send("Invalid roster selection, it can either be a 1 or 2")
+            await asyncio.sleep(20)
+            await ctx.message.delete()
+            await msg.delete()
 
 
     @commands.command(help="Add a user with this command")
