@@ -27,21 +27,26 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         member = ctx.message.author
         role = get(member.guild.roles, name="Bot Testing Role")
         await member.add_roles(role)
+
+    # Testing stuff
+    @commands.command()
+    async def check(self, ctx):
+        await ctx.send(ctx.author.display_name)
     
     @commands.command(aliases=['in', 'i'], help="Type !in (yes I know it says !_in but !in works) followed by either a 1 or a 2 to join a roster")
     async def _in(self, ctx, message=None):
         print(ctx, message)
-        print(ctx.author.name)
+        print(ctx.author.display_name)
         if(message == None):
             message = '1'
         if (message == '1') or (message == '2'):
             db = sqlite3.connect('roster.sqlite')
             cursor = db.cursor()
             sql = "SELECT nickname FROM main WHERE nickname=?"
-            cursor.execute(sql, [(ctx.author.name)])
+            cursor.execute(sql, [(ctx.author.display_name)])
             result = cursor.fetchall()
             user_name = ctx.author.mention
-            user_nickname = ctx.author.name
+            user_nickname = ctx.author.display_name
             if len(result) == 0:
                 sql = ("INSERT INTO main(name, nickname, roster) VALUES(?,?,?)")
                 val = (user_name, user_nickname, message)
@@ -91,9 +96,9 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
             nicknames = []
             names = []
             for member in ctx.guild.members:
-                if(str(member.name).lower().find(name) != -1):
+                if(str(member.display_name).lower().find(name) != -1):
                     names.append(member.mention)
-                    nicknames.append(member.name)
+                    nicknames.append(member.nick)
             if(len(nicknames) != 1):
                 await ctx.send(f"Too many/no people found with {name} in their name")
             else:
@@ -152,9 +157,9 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
             nicknames = []
             names = []
             for member in ctx.guild.members:
-                if(str(member.name).lower().find(name) != -1):
+                if(str(member.display_name).lower().find(name) != -1):
                     names.append(member.mention)
-                    nicknames.append(member.name)
+                    nicknames.append(member.display_name)
             if(len(nicknames) != 1):
                 await ctx.send(f"Too many/no people found with {name} in their name")
             else:
@@ -194,13 +199,13 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         db = sqlite3.connect('roster.sqlite')
         cursor = db.cursor()
         sql = "SELECT nickname FROM main WHERE nickname=?"
-        cursor.execute(sql, [(ctx.author.name)])
+        cursor.execute(sql, [(ctx.author.display_name)])
         result = cursor.fetchall()
         if len(result) == 0:
             msg = await ctx.send("You are not in any WS Rosters")
         else:
             sql = "DELETE FROM main WHERE nickname=?"
-            cursor.execute(sql, [(ctx.author.name)])
+            cursor.execute(sql, [(ctx.author.display_name)])
             db.commit()
             cursor.close()
             db.close()
