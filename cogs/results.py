@@ -1,4 +1,5 @@
 import random
+from discord.enums import EnumMeta
 from dotenv import load_dotenv
 import sqlite3
 import datetime
@@ -16,36 +17,40 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(help="Input a WS results, of the form enemy type(15v15) relic-count")
-    async def ws_result(self, ctx, enemy, ws_type, relics):
+    @commands.command(help="Input a WS results, of the form  type(15v15) relic-count, enemy")
+    async def ws_result(self, ctx, ws_type, relics, *enemy):
         if(ws_type == "15v15" or ws_type == "10v10" or ws_type == "5v5"):
+            str_enemy = str(" ".join(enemy))
+            print(str_enemy)
             relic_count = relics.split("-")
             print(relic_count[0], relic_count[1])
+            if(int(relic_count[0]) > int(relic_count[1])):
+                print("here")
             db = sqlite3.connect('results.sqlite')
-            cursor = db.cursor()
-            result = "Win" if (relic_count[0] > relic_count[1]) else "Tie" if (relic_count[0] == relic_count[1]) else "Loss"
+            cursor = db.cursor() 
+            result = "Win" if (int(relic_count[0]) > int(relic_count[1])) else "Tie" if (int(relic_count[0]) == int(relic_count[1])) else "Loss"
             sql = ("INSERT INTO main(enemy, type, result, relics) VALUES(?,?,?,?)")
-            val = (enemy, ws_type, result, relics)
+            val = (str_enemy, ws_type, result, relics)
             cursor.execute(sql,val)
             db.commit()
             cursor.close()
             db.close()
             if result == "Win":
                 result_embed = discord.Embed(
-                    description = (f'BattleCo vs. {enemy}'),
+                    description = (f'BattleCo vs. {str_enemy}'),
                     colour = discord.Colour.green()
                 )
             elif result == "Tie":
                 result_embed = discord.Embed(
-                    description = (f'BattleCo vs. {enemy}'),
+                    description = (f'BattleCo vs. {str_enemy}'),
                     colour = discord.Colour.blue()
                 )
             else:
                 result_embed = discord.Embed(
-                    description = (f'BattleCo vs. {enemy}'),
+                    description = (f'BattleCo vs. {str_enemy}'),
                     colour = discord.Colour.red()
                 )
-            result_embed.add_field(name='Enemy: ', value=enemy)
+            result_embed.add_field(name='Enemy: ', value=str_enemy)
             result_embed.add_field(name='WS Type: ', value=ws_type)
             result_embed.add_field(name='Result: ', value=result)
             result_embed.add_field(name='Relic Count: ', value=relics)  
