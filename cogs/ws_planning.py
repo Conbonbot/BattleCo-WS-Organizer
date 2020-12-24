@@ -304,7 +304,7 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
 
 
     @commands.command(help="Displays a person(s) on this server")
-    async def user_find(self, ctx, name):
+    async def user(self, ctx, name):
         names = []
         msg = []
         for member in ctx.guild.members:
@@ -322,7 +322,7 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
 
     
     @commands.command(invoke_without_command=True, help="Displays everyone in a role")
-    async def role_find(self, ctx, *roles):
+    async def role(self, ctx, *roles):
         msg = []
         str_role = ""
         for role in roles:
