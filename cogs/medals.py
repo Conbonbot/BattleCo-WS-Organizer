@@ -278,63 +278,6 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                 await asyncio.sleep(20)
                 await ctx.message.delete()
                 await msg.delete()
-        
-
-
-    @commands.command(help="Displays a person(s) on this server")
-    async def user_find(self, ctx, name):
-        names = []
-        msg = []
-        for member in ctx.guild.members:
-            if(str(member.name).lower().find(name) != -1):
-                names.append(member.name)
-        if(len(names) == 0):
-            msg.append(await ctx.send(f"No users found with {name} in their name"))
-        else:
-            msg.append(await ctx.send(f"**Here are the users that have {name} in their name:**"))
-            msg.append(await ctx.send(",  ".join(names)))
-        await asyncio.sleep(20 + len(names))
-        await ctx.message.delete()
-        for ms in msg:
-            await ms.delete()
-
-    
-    @commands.command(invoke_without_command=True, help="Displays everyone in a role")
-    async def role_find(self, ctx, *role):
-        msg = []
-        if(len(role) == 1):
-            role = str(role)
-            role = role[2:-3]
-        else:
-            role = " ".join(role)
-        people = []
-        role = role.strip("<>")
-        role = role.strip("@")
-        role = role.strip("&")
-        possible_roles = []
-        for total_role in ctx.guild.roles:
-            #print(total_role)
-            if(str(total_role).lower().find(role) != -1):
-                possible_roles.append(total_role)
-        if(len(possible_roles) != 0):
-            final_messages = []
-            for ind_role in possible_roles:
-                person = []
-                for member in ctx.guild.members:
-                    if(str(member.roles).find(str(ind_role)) != -1):
-                        person.append(member.name)
-                people = ",  ".join(person)
-                message = f"```Here is who has the {ind_role} role: \n"
-                final_message = message + people + "```\n"
-                final_messages.append(final_message)
-            message = "".join(final_messages)
-            msg.append(await ctx.send(message))
-        else:
-            msg.append(await ctx.send(f"Nobody has the {role} role"))
-        await asyncio.sleep(20 + len(people))
-        await ctx.message.delete()
-        for ms in msg:
-            await ms.delete()
     
 
 

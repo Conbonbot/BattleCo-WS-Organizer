@@ -40,6 +40,9 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         if(message == None):
             message = '1'
         if (message == '1') or (message == '2'):
+            member = ctx.message.author
+            role = get(member.guild.roles, name="WS_Squad_1")
+            await member.add_roles(role)
             db = sqlite3.connect('roster.sqlite')
             cursor = db.cursor()
             sql = "SELECT nickname FROM main WHERE nickname=?"
@@ -196,6 +199,9 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         
     @commands.command(aliases=['o'], help="Use this command (!out) to leave a roster")
     async def out(self, ctx):
+        member = ctx.message.author
+        role = get(member.guild.roles, name="WS_Squad_1")
+        await member.remove_roles(role)
         db = sqlite3.connect('roster.sqlite')
         cursor = db.cursor()
         sql = "SELECT nickname FROM main WHERE nickname=?"
@@ -292,6 +298,58 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         else:
             msg.append(await ctx.send("There are only two rosters, so use !start 1 or !start 2"))
         await asyncio.sleep(20)
+        await ctx.message.delete()
+        for ms in msg:
+            await ms.delete()
+
+
+    @commands.command(help="Displays a person(s) on this server")
+    async def user_find(self, ctx, name):
+        names = []
+        msg = []
+        for member in ctx.guild.members:
+            if(member.name.lower().find(name.lower()) != -1):
+                names.append(member.display_name)
+        if(len(names) == 0):
+            msg.append(await ctx.send(f"No users found with {name} in their name"))
+        else:
+            msg.append(await ctx.send(f"**Here are the users that have {name} in their name:**"))
+            msg.append(await ctx.send(",  ".join(names)))
+        await asyncio.sleep(20 + len(names))
+        await ctx.message.delete()
+        for ms in msg:
+            await ms.delete()
+
+    
+    @commands.command(invoke_without_command=True, help="Displays everyone in a role")
+    async def role_find(self, ctx, *roles):
+        msg = []
+        str_role = ""
+        for role in roles:
+            str_role += role
+        print(str_role)
+        people = []
+        possible_roles = []
+        for total_role in ctx.guild.roles:
+            #print(total_role)
+            if(str(total_role).lower().find(str_role.lower()) != -1):
+                possible_roles.append(total_role)
+        if(len(possible_roles) != 0):
+            final_messages = []
+            for ind_role in possible_roles:
+                person = []
+                for member in ctx.guild.members:
+                    if(str(member.roles).find(str(ind_role)) != -1):
+                        person.append(member.display_name)
+                people = ",  ".join(person)
+                message = f"```Here is who has the {ind_role} role: \n"
+                final_message = message + people + "```\n"
+                final_messages.append(final_message)
+            message = "".join(final_messages)
+            msg.append(await ctx.send(message))
+        else:
+            msg.append(await ctx.send(f"Nobody has the {str_role} role"))
+        await asyncio.sleep(20 + len(people))
         await ctx.message.delete()
         for ms in msg:
             await ms.delete()
