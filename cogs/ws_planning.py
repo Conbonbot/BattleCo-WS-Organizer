@@ -304,12 +304,29 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
 
 
     @commands.command(help="Displays a person(s) on this server")
+    async def nick(self, ctx, name):
+        names = []
+        msg = []
+        for member in ctx.guild.members:
+            if(member.display_name.lower().find(name.lower()) != -1):
+                names.append(member.display_name)
+        if(len(names) == 0):
+            msg.append(await ctx.send(f"No users found with {name} in their name"))
+        else:
+            msg.append(await ctx.send(f"**Here are the users that have {name} in their name:**"))
+            msg.append(await ctx.send(",  ".join(names)))
+        await asyncio.sleep(20 + len(names))
+        await ctx.message.delete()
+        for ms in msg:
+            await ms.delete()
+
+    @commands.command(help="Displays a person(s) on this server")
     async def user(self, ctx, name):
         names = []
         msg = []
         for member in ctx.guild.members:
             if(member.name.lower().find(name.lower()) != -1):
-                names.append(member.display_name)
+                names.append(member.name)
         if(len(names) == 0):
             msg.append(await ctx.send(f"No users found with {name} in their name"))
         else:
