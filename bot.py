@@ -21,13 +21,13 @@ bot = commands.Bot(command_prefix='!')
 # Ready
 @bot.event
 async def on_ready():
-    db = sqlite3.connect('roster.sqlite')
+    db = sqlite3.connect('rsqueue.sqlite')
     cursor = db.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS main(
-            name TEXT,
+            user BLOB,
             nickname TEXT,
-            roster TEXT
+            level INTEGER
         )
     ''')
     #addColumn = "ALTER TABLE main ADD COLUMN relics TEXT"
@@ -42,9 +42,37 @@ async def on_message(ctx):
     await bot.process_commands(ctx)
 
 
+def add(queue, user):
+    db = sqlite3.connect('rsqueue.sqlite')
+    cursor = db.cursor()
+    sql = "SELECT nickname FROM main WHERE nickname=?"
+    cursor.execute(sql, [(user.display_name)])
+    result = cursor.fetchall()
+    if len(result) == 0: # Person wasn't found in database, add them to the rs queue
+        sql = ("INSERT INTO main(user, nickname, level) VALUES(?,?,?)")
+        val = (user, user.display_name, queue)
+        cursor.execute(sql, val)
+
+@bot.event
+async def on_reaction_add(reaction, user):
+    emoji = reaction.emoji
+
+    if str(user) != "Oxyg3n's WS Organizer#7677" and str(reaction.message.author) == "Oxyg3n's WS Organizer#7677":
+        if(emoji == "6️⃣"):
+            #add(6, user)
+            await reaction.message.channel.send("added to rs6 queue")
+        elif(emoji == "7️⃣"):
+            add(7, user)
+        elif(emoji == "8️⃣"):
+            add(8, user)
+        elif(emoji == "9️⃣"):
+            add(9, user)
+        elif(emoji == "🔟"):
+            add(10, user)
 
 
-intital_extensions = ['cogs.moderation', 'cogs.ws_planning', 'cogs.poll', 'cogs.medals', 'cogs.results']
+
+intital_extensions = ['cogs.moderation', 'cogs.ws_planning', 'cogs.poll', 'cogs.medals', 'cogs.results', 'cogs.redstars']
 
 if __name__ == '__main__':
     for extension in intital_extensions:

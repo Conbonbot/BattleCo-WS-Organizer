@@ -18,16 +18,6 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
     def __init__(self, bot):
         self.bot = bot
 
-    
-
-
-    # Test role addition
-    @commands.command(pass_context=True)
-    async def addrole(self, ctx):
-        member = ctx.message.author
-        role = get(member.guild.roles, name="Bot Testing Role")
-        await member.add_roles(role)
-
     # Testing stuff
     @commands.command()
     async def check(self, ctx):
@@ -99,14 +89,20 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
             nicknames = []
             names = []
             for member in ctx.guild.members:
-                if(str(member.display_name).lower().find(name) != -1):
+                if(member.display_name.lower().find(str(name)) != -1):
+                    print(member.display_name)
                     names.append(member.mention)
-                    nicknames.append(member.nick)
-            if(len(nicknames) != 1):
-                await ctx.send(f"Too many/no people found with {name} in their name")
+                    nicknames.append(member.display_name)
+            if(len(nicknames) > 1):
+                print(nicknames)
+                str_nick = " ".join(nicknames)
+                await ctx.send(f"Too many people found with {name} \n Here is who has {name} in their name: {str_nick}")
+            elif(len(nicknames == 0)):
+                await ctxsend(f"Nobody found with {name} in their name")
             else:
                 user_nickname = nicknames[0]
                 user_name = names[0]
+                print(user_name, user_nickname)
                 db = sqlite3.connect('roster.sqlite')
                 cursor = db.cursor()
                 sql = "SELECT nickname FROM main WHERE nickname=?"
@@ -381,4 +377,4 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
  
 def setup(bot):
     bot.add_cog(BattleCoWSCogs(bot))
-    print('BattleCo is loaded')
+    print('WS Planning loaded')

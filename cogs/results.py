@@ -100,4 +100,4 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
  
 def setup(bot):
     bot.add_cog(BattleCoWSCogs(bot))
-    print('BattleCo is loaded')
+    print('Results loaded')
