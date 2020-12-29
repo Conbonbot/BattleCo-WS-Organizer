@@ -96,9 +96,9 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
             if(len(nicknames) > 1):
                 print(nicknames)
                 str_nick = " ".join(nicknames)
-                await ctx.send(f"Too many people found with {name} \n Here is who has {name} in their name: {str_nick}")
-            elif(len(nicknames == 0)):
-                await ctxsend(f"Nobody found with {name} in their name")
+                await ctx.send(f"Too many people found with {name}, here is who has {name} in their name:\n {str_nick}")
+            elif(len(nicknames) == 0):
+                await ctx.send(f"Nobody found with {name} in their name")
             else:
                 user_nickname = nicknames[0]
                 user_name = names[0]
@@ -159,8 +159,12 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                 if(str(member.display_name).lower().find(name) != -1):
                     names.append(member.mention)
                     nicknames.append(member.display_name)
-            if(len(nicknames) != 1):
-                await ctx.send(f"Too many/no people found with {name} in their name")
+            if(len(nicknames) > 1):
+                print(nicknames)
+                str_nick = " ".join(nicknames)
+                await ctx.send(f"Too many people found with {name}, here is who has {name} in their name:\n {str_nick}")
+            elif(len(nicknames) == 0):
+                await ctx.send(f"Nobody found with {name} in their name")
             else:
                 user_nickname = nicknames[0]
                 user_name = names[0]
