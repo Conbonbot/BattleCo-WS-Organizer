@@ -54,7 +54,8 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                         "RS8" : "<@&712351461224218664>",
                         "RS9" : "<@&719383035602272306>",
                         "RS10" : "<@&795056815091089409>",
-                    }   
+                        "TEST" : "<@&795056080123330610>"
+                    }
                     await ctx.send(f'{rs_pings[f"RS{rs_level}"]} ({count}/4) {ctx.author.mention} joined.')
                 else:
                     await ctx.send(f"RS{rs_level} Ready! {people_mention[0].mention} {people_mention[1].mention} {people_mention[2].mention} {people_mention[3].mention}")
@@ -75,42 +76,44 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
             # Making sure their rs queue isn't higher than specified level
             if(int(level) > int(rs_level)):
                 await ctx.send(f"You are currently RS{rs_level}, so you can't join a RS{level} queue")
-            db = sqlite3.connect('rsqueue.sqlite')
-            cursor = db.cursor()
-            sql = "SELECT level FROM main WHERE nickname=?"
-            cursor.execute(sql, [(ctx.author.display_name)])
-            result = cursor.fetchall()
-            if len(result) == 0: # They weren't found on any RS Queues, add them
-                sql = "INSERT INTO main(user_id, nickname, level) VALUES(?,?,?)"
-                val = (ctx.author.id, ctx.author.display_name, level)
-                cursor.execute(sql, val)
-                # print out the RS Queue
-                sql = "SELECT user_id FROM main WHERE level=?"
-                cursor.execute(sql, [(level)])
-                people = cursor.fetchall()
-                count = 0
-                people_mention = []
-                for person in people:
-                    people_mention.append(ctx.guild.get_member(int(person[0])))
-                    count += 1
-                if(count != 4):
-                    rs_pings = {
-                        "RS6" : "<@&710466154149314572>",
-                        "RS7" : "<@&712351336766636182>",
-                        "RS8" : "<@&712351461224218664>",
-                        "RS9" : "<@&719383035602272306>",
-                        "RS10" : "<@&795056815091089409>",
-                    }   
-                    await ctx.send(f'{rs_pings[f"RS{rs_level}"]} ({count}/4) {ctx.author.mention} joined.')
-                else:
-                    await ctx.send(f"RS{level} Ready! {people_mention[0].mention} {people_mention[1].mention} {people_mention[2].mention} {people_mention[3].mention}")
-                    sql = "DELETE FROM main WHERE level=?"
-                    cursor.execute(sql, [(level)])
             else:
-                await ctx.send(f"You are already in a RS Queue, use !rs o to leave the queue")
-            db.commit()
-            cursor.close()
-            db.close()
+                db = sqlite3.connect('rsqueue.sqlite')
+                cursor = db.cursor()
+                sql = "SELECT level FROM main WHERE nickname=?"
+                cursor.execute(sql, [(ctx.author.display_name)])
+                result = cursor.fetchall()
+                if len(result) == 0: # They weren't found on any RS Queues, add them
+                    sql = "INSERT INTO main(user_id, nickname, level) VALUES(?,?,?)"
+                    val = (ctx.author.id, ctx.author.display_name, level)
+                    cursor.execute(sql, val)
+                    # print out the RS Queue
+                    sql = "SELECT user_id FROM main WHERE level=?"
+                    cursor.execute(sql, [(level)])  
+                    people = cursor.fetchall()
+                    count = 0
+                    people_mention = []
+                    for person in people:
+                        people_mention.append(ctx.guild.get_member(int(person[0])))
+                        count += 1
+                    if(count != 4):
+                        rs_pings = {
+                            "RS6" : "<@&710466154149314572>",
+                            "RS7" : "<@&712351336766636182>",
+                            "RS8" : "<@&712351461224218664>",
+                            "RS9" : "<@&719383035602272306>",
+                            "RS10" : "<@&795056815091089409>",
+                            "TEST" : "<@&795056080123330610>"
+                        }   
+                        await ctx.send(f'{rs_pings[f"RS{rs_level}"]} ({count}/4) {ctx.author.mention} joined.')
+                    else:
+                        await ctx.send(f"RS{level} Ready! {people_mention[0].mention} {people_mention[1].mention} {people_mention[2].mention} {people_mention[3].mention}")
+                        sql = "DELETE FROM main WHERE level=?"
+                        cursor.execute(sql, [(level)])
+                else:
+                    await ctx.send(f"You are already in a RS Queue, use !rs o to leave the queue")
+                db.commit()
+                cursor.close()
+                db.close()
         else: # Leave a queue
             if(level == "o" or level == "out"):
                 db = sqlite3.connect('rsqueue.sqlite')
@@ -144,15 +147,14 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
             sql = "SELECT nickname FROM main WHERE level=?"
             cursor.execute(sql, [(level)])
             people = cursor.fetchall()
-            print(f"RS{level}", people)
             count = 0
-            str_person = ""
+            list_people = []
             for person in people:
-                str_person = ", ".join(map(str, person))
-                print(str_person)
-                count = str_person.count(",")+1
-            if(count != 0):
-                queue_embed.add_field(name=f"RS{level} Queue ({count}/4)", value=str_person, inline=False)
+                list_people.append(person[0])
+            str_person = ", ".join(list_people)
+            print(f"RS{level}", str_person, len(list_people))
+            if(len(list_people) != 0):
+                queue_embed.add_field(name=f"RS{level} Queue ({len(list_people)}/4)", value=str_person, inline=False)
         # Throw everything in an embed and call it a day
         queue_embed.add_field(name="React below to join a Red Star queue", value="Queues: 6, 7, 8, 9, 10")
         message = await ctx.send(embed=queue_embed)
