@@ -17,11 +17,6 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
 
     def __init__(self, bot):
         self.bot = bot
-
-    # Testing stuff
-    @commands.command()
-    async def check(self, ctx):
-        await ctx.send(ctx.author.display_name)
     
     @commands.command(aliases=['in', 'i'], help="Type !in (yes I know it says !_in but !in works) followed by either a 1 or a 2 to join a roster")
     async def _in(self, ctx, message=None):
