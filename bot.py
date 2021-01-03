@@ -39,6 +39,8 @@ async def on_ready():
 async def on_message(ctx):
     if(ctx.content.find('The `roster` command is disabled.') != -1):
         await ctx.delete()
+    if(ctx.content.find('I need the "Manage roles" permission for the `rs` command to work.') != -1):
+        await ctx.delete()
     await bot.process_commands(ctx)
 
 
