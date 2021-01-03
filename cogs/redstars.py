@@ -45,13 +45,21 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                 people_mention = []
                 print(people)
                 for person in people:
-                    people_mention.append(ctx.guild.get_member(person))
-                    print(people_mention[0].mention)
+                    people_mention.append(ctx.guild.get_member(int(person[0])))
                     count += 1
                 if(count != 4):
-                    await ctx.send(f"<@&795056080123330610> ({count}/4) {ctx.author.mention} joined.")
+                    rs_pings = {
+                        "RS6" : "<@&710466154149314572>",
+                        "RS7" : "<@&712351336766636182>",
+                        "RS8" : "<@&712351461224218664>",
+                        "RS9" : "<@&719383035602272306>",
+                        "RS10" : "<@&795056815091089409>",
+                    }   
+                    await ctx.send(f'{rs_pings[f"RS{rs_level}"]} ({count}/4) {ctx.author.mention} joined.')
                 else:
                     await ctx.send(f"RS{rs_level} Ready! {people_mention[0].mention} {people_mention[1].mention} {people_mention[2].mention} {people_mention[3].mention}")
+                    sql = "DELETE FROM main WHERE level=?"
+                    cursor.execute(sql, [(rs_level)])
             else:
                 await ctx.send(f"You are already in the RS{rs_level} Queue, use !rs o to leave the queue")
             db.commit()
@@ -86,9 +94,18 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                     people_mention.append(ctx.guild.get_member(int(person[0])))
                     count += 1
                 if(count != 4):
-                    await ctx.send(f"<@&795056080123330610> ({count}/4) {ctx.author.mention} joined.")
+                    rs_pings = {
+                        "RS6" : "<@&710466154149314572>",
+                        "RS7" : "<@&712351336766636182>",
+                        "RS8" : "<@&712351461224218664>",
+                        "RS9" : "<@&719383035602272306>",
+                        "RS10" : "<@&795056815091089409>",
+                    }   
+                    await ctx.send(f'{rs_pings[f"RS{rs_level}"]} ({count}/4) {ctx.author.mention} joined.')
                 else:
                     await ctx.send(f"RS{level} Ready! {people_mention[0].mention} {people_mention[1].mention} {people_mention[2].mention} {people_mention[3].mention}")
+                    sql = "DELETE FROM main WHERE level=?"
+                    cursor.execute(sql, [(level)])
             else:
                 await ctx.send(f"You are already in a RS Queue, use !rs o to leave the queue")
             db.commit()

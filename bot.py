@@ -89,6 +89,13 @@ async def on_reaction_add(reaction, user):
     emoji = reaction.emoji
 
     if str(user) != "Oxyg3n's WS Organizer#7677" and str(reaction.message.author) == "Oxyg3n's WS Organizer#7677":
+        rs_pings = {
+            "RS6" : "<@&710466154149314572>",
+            "RS7" : "<@&712351336766636182>",
+            "RS8" : "<@&712351461224218664>",
+            "RS9" : "<@&719383035602272306>",
+            "RS10" : "<@&795056815091089409>",
+        }   
         if(emoji == "6️⃣"):
             load_dotenv()
             api_request_str = os.getenv('API_KEY_REQUEST') + str(user.id)
@@ -97,9 +104,16 @@ async def on_reaction_add(reaction, user):
             rs_level = total_info["map"]["rs"]["level"]
             if(rs_level >= 6 and add(6, user)):
                 if(queue_status(6) < 4): # MAKE SURE TO CHANGE TO BE ACTUAL RS PINGS
-                    await reaction.message.channel.send(f"<@&795056080123330610> ({queue_status(6)}/4) {user.mention} joined.")
+                    await reaction.message.channel.send(f'{rs_pings["RS6"]} ({queue_status(6)}/4) {user.mention} joined.')
                 else:
                     await reaction.message.channel.send(f"RS9 Ready! {print_people(6)}")
+                    sql = "DELETE FROM main WHERE level=?"
+                    db = sqlite3.connect('rsqueue.sqlite')
+                    cursor = db.cursor()
+                    cursor.execute(sql, [(6)])
+                    db.commit()
+                    cursor.close()
+                    db.close()
             else:
                 if(rs_level >= 6):
                     await reaction.message.channel.send(f"{user.mention} you are already in a RS Queue, use !rs o to leave the queue")
@@ -113,9 +127,16 @@ async def on_reaction_add(reaction, user):
             rs_level = total_info["map"]["rs"]["level"]
             if(rs_level >= 7 and add(7, user)):
                 if(queue_status(7) < 4):
-                    await reaction.message.channel.send(f"<@&795056080123330610> ({queue_status(7)}/4) {user.mention} joined.")
+                    await reaction.message.channel.send(f'{rs_pings["RS7"]} ({queue_status(6)}/4) {user.mention} joined.')
                 else:
                     await reaction.message.channel.send(f"RS9 Ready! {print_people(7)}")
+                    sql = "DELETE FROM main WHERE level=?"
+                    db = sqlite3.connect('rsqueue.sqlite')
+                    cursor = db.cursor()
+                    cursor.execute(sql, [(6)])
+                    db.commit()
+                    cursor.close()
+                    db.close()
             else:
                 if(rs_level >= 7):
                     await reaction.message.channel.send(f"{user.mention} you are already in a RS Queue, use !rs o to leave the queue")
@@ -129,9 +150,16 @@ async def on_reaction_add(reaction, user):
             rs_level = total_info["map"]["rs"]["level"]
             if(rs_level >= 8 and add(8, user)):
                 if(queue_status(8) < 4):
-                    await reaction.message.channel.send(f"<@&795056080123330610> ({queue_status(8)}/4) {user.mention} joined.")
+                    await reaction.message.channel.send(f'{rs_pings["RS8"]} ({queue_status(6)}/4) {user.mention} joined.')
                 else:
                     await reaction.message.channel.send(f"RS9 Ready! {print_people(8)}")
+                    sql = "DELETE FROM main WHERE level=?"
+                    db = sqlite3.connect('rsqueue.sqlite')
+                    cursor = db.cursor()
+                    cursor.execute(sql, [(6)])
+                    db.commit()
+                    cursor.close()
+                    db.close()
             else:
                 if(rs_level >= 8):
                     await reaction.message.channel.send(f"{user.mention} you are already in a RS Queue, use !rs o to leave the queue")
@@ -145,9 +173,16 @@ async def on_reaction_add(reaction, user):
             rs_level = total_info["map"]["rs"]["level"]
             if(rs_level >= 9 and add(9, user)):
                 if(queue_status(9) < 4):
-                    await reaction.message.channel.send(f"<@&795056080123330610> ({queue_status(9)}/4) {user.mention} joined.")
+                    await reaction.message.channel.send(f'{rs_pings["RS9"]} ({queue_status(6)}/4) {user.mention} joined.')
                 else:
                     await reaction.message.channel.send(f"RS9 Ready! {print_people(9)}")
+                    sql = "DELETE FROM main WHERE level=?"
+                    db = sqlite3.connect('rsqueue.sqlite')
+                    cursor = db.cursor()
+                    cursor.execute(sql, [(6)])
+                    db.commit()
+                    cursor.close()
+                    db.close()
             else:
                 if(rs_level >= 9):
                     await reaction.message.channel.send(f"{user.mention} you are already in a RS Queue, use !rs o to leave the queue")
@@ -161,20 +196,22 @@ async def on_reaction_add(reaction, user):
             rs_level = total_info["map"]["rs"]["level"]
             if(rs_level >= 10 and add(10, user)):
                 if(queue_status(10) < 4):
-                    await reaction.message.channel.send(f"<@&795056080123330610> ({queue_status(10)}/4) {user.mention} joined.")
+                    await reaction.message.channel.send(f'{rs_pings["RS10"]} ({queue_status(6)}/4) {user.mention} joined.')
                 else:
                     await reaction.message.channel.send(f"RS9 Ready! {print_people(10)}")
+                    sql = "DELETE FROM main WHERE level=?"
+                    db = sqlite3.connect('rsqueue.sqlite')
+                    cursor = db.cursor()
+                    cursor.execute(sql, [(6)])
+                    db.commit()
+                    cursor.close()
+                    db.close()
             else:
                 if(rs_level >= 10):
                     await reaction.message.channel.send(f"{user.mention} you are already in a RS Queue, use !rs o to leave the queue")
                 else:
                     await reaction.message.channel.send(f"{user.mention} your current RS level is {rs_level}, you can't join a RS10 queue 😡")
-#TESTING_RS9 <@&795056080123330610>
-#RS6 <@&710466154149314572>
-#RS7 <@&712351336766636182>
-#RS8 <@&712351461224218664>
-#RS9 <@&719383035602272306>
-#RS10 <@&795056815091089409>
+
 
 
 intital_extensions = ['cogs.moderation', 'cogs.ws_planning', 'cogs.poll', 'cogs.medals', 'cogs.results', 'cogs.redstars']
