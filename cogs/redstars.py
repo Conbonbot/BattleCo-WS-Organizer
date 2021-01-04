@@ -130,6 +130,47 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                 db.commit()
                 cursor.close()
                 db.close()
+        
+    @commands.command(help="force a queue to start")
+    async def ready(self, ctx, level):
+        print("hello")
+        db = sqlite3.connect('rsqueue.sqlite')
+        cursor = db.cursor()
+        sql = "SELECT nickname FROM main WHERE nickname=?"
+        cursor.execute(sql, [(ctx.author.display_name)])
+        result = cursor.fetchall()
+        print(result)
+        if(result != []):
+            sql = "SELECT user_id FROM main WHERE level=?"
+            cursor.execute(sql, [(level)])
+            people = cursor.fetchall()
+            people_mention = []
+            for person in people:
+                people_mention.append(ctx.guild.get_member(int(person[0])))
+            if(len(people_mention) == 1):
+                await ctx.send(f"RS{level} Ready! {people_mention[0].mention}")
+            elif(len(people_mention) == 2):
+                await ctx.send(f"RS{level} Ready! {people_mention[0].mention} {people_mention[1].mention}")
+            elif(len(people_mention) == 3):
+                await ctx.send(f"RS{level} Ready! {people_mention[0].mention} {people_mention[1].mention} {people_mention[2].mention}")
+            elif(len(people_mention) == 4):
+                await ctx.send(f"RS{level} Ready! {people_mention[0].mention} {people_mention[1].mention} {people_mention[2].mention} {people_mention[3].mention}")
+            sql = "DELETE FROM main WHERE level=?"
+            cursor.execute(sql, [(level)])
+        else:
+            has_officer = False
+            for role in ctx.author.roles:
+                if(str(role) == "Officer"):
+                    has_officer = True
+            if(has_officer):
+                sql = "DELETE FROM main WHERE level=?"
+                cursor.execute(sql, [(level)])
+                await ctx.send("Queue has been cleared")
+            else:
+                await ctx.send("You can't clear a queue you aren't in")
+        db.commit()
+        cursor.close()
+        db.close()
 
 
 
