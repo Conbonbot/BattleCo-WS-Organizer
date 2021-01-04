@@ -156,9 +156,9 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
             if(len(list_people) != 0):
                 queue_embed.add_field(name=f"RS{level} Queue ({len(list_people)}/4)", value=str_person, inline=False)
         # Throw everything in an embed and call it a day
-        queue_embed.add_field(name="React below to join a Red Star queue", value="Queues: 6, 7, 8, 9, 10")
+        queue_embed.add_field(name="React below to join a Red Star queue (and ❌ to leave a queue)", value="Queues: 6️⃣, 7️⃣, 8️⃣, 9️⃣, 🔟, ❌")
         message = await ctx.send(embed=queue_embed)
-        emojis = ['6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟']
+        emojis = ['6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟', '❌']
         for emoji in emojis:
             await message.add_reaction(emoji)
         

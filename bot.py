@@ -97,9 +97,9 @@ async def on_reaction_add(reaction, user):
             "RS9" : "<@&719383035602272306>",
             "RS10" : "<@&795056815091089409>",
             "TEST" : "<@&795056080123330610>"
-        }   
-        if(emoji == "6️⃣"):
-            rs_queue = 6
+        }
+        rs_queue = 6 if (emoji == "6️⃣") else 7 if emoji == "7️⃣" else 8 if emoji == "8️⃣" else 9 if emoji == "9️⃣" else 10 if emoji == "🔟" else -1 if emoji == "❌" else 0
+        if(rs_queue != 0 and rs_queue != -1): # Add person to respective queue
             load_dotenv()
             api_request_str = os.getenv('API_KEY_REQUEST') + str(user.id)
             api_request = requests.get(api_request_str)
@@ -125,114 +125,22 @@ async def on_reaction_add(reaction, user):
                     await reaction.message.channel.send(f"{user.mention} you are already in a RS Queue, use !rs o to leave the queue")
                 else:
                     await reaction.message.channel.send(f"{user.mention} your current RS level is {rs_level}, you can't join a RS{rs_queue} queue 😡")
-        elif(emoji == "7️⃣"):
-            rs_queue = 7
-            load_dotenv()
-            api_request_str = os.getenv('API_KEY_REQUEST') + str(user.id)
-            api_request = requests.get(api_request_str)
-            total_info = api_request.json()
-            rs_level = total_info["map"]["rs"]["level"]
-            status = queue_status(rs_queue)
-            print(rs_level, rs_queue)
-            if(rs_level >= rs_queue and add(rs_queue, user)):
-                if(queue_status(rs_queue) < 4):
-                    await reaction.message.channel.send(f'{rs_pings[f"RS{rs_queue}"]} ({queue_status(rs_queue)}/4) {user.mention} joined.')
-                else:
-                    people = print_people(rs_queue, user)
-                    await reaction.message.channel.send(f"RS{rs_queue} Ready! {people[0].mention}, {people[1].mention}, {people[2].mention}, {people[3].mention}")
-                    sql = "DELETE FROM main WHERE level=?"
-                    db = sqlite3.connect('rsqueue.sqlite')
-                    cursor = db.cursor()
-                    cursor.execute(sql, [(rs_queue)])
-                    db.commit()
-                    cursor.close()
-                    db.close()
+        elif(rs_queue == -1): # Remove them from any queues
+            db = sqlite3.connect('rsqueue.sqlite')
+            cursor = db.cursor()
+            sql = "SELECT nickname FROM main WHERE nickname=?"
+            cursor.execute(sql, [(user.display_name)])
+            result = cursor.fetchall()
+            if len(result) == 0: 
+                await reaction.message.channel.send("You are not in any rosters, use !rs or !q to join a roster")
             else:
-                if(rs_level >= rs_queue):
-                    await reaction.message.channel.send(f"{user.mention} you are already in a RS Queue, use !rs o to leave the queue")
-                else:
-                    await reaction.message.channel.send(f"{user.mention} your current RS level is {rs_level}, you can't join a RS{rs_queue} queue 😡")
-        elif(emoji == "8️⃣"):
-            rs_queue = 8
-            load_dotenv()
-            api_request_str = os.getenv('API_KEY_REQUEST') + str(user.id)
-            api_request = requests.get(api_request_str)
-            total_info = api_request.json()
-            rs_level = total_info["map"]["rs"]["level"]
-            status = queue_status(rs_queue)
-            print(rs_level, rs_queue)
-            if(rs_level >= rs_queue and add(rs_queue, user)):
-                if(queue_status(rs_queue) < 4):
-                    await reaction.message.channel.send(f'{rs_pings[f"RS{rs_queue}"]} ({queue_status(rs_queue)}/4) {user.mention} joined.')
-                else:
-                    people = print_people(rs_queue, user)
-                    await reaction.message.channel.send(f"RS{rs_queue} Ready! {people[0].mention}, {people[1].mention}, {people[2].mention}, {people[3].mention}")
-                    sql = "DELETE FROM main WHERE level=?"
-                    db = sqlite3.connect('rsqueue.sqlite')
-                    cursor = db.cursor()
-                    cursor.execute(sql, [(rs_queue)])
-                    db.commit()
-                    cursor.close()
-                    db.close()
-            else:
-                if(rs_level >= rs_queue):
-                    await reaction.message.channel.send(f"{user.mention} you are already in a RS Queue, use !rs o to leave the queue")
-                else:
-                    await reaction.message.channel.send(f"{user.mention} your current RS level is {rs_level}, you can't join a RS{rs_queue} queue 😡")
-        elif(emoji == "9️⃣"):
-            rs_queue = 9
-            load_dotenv()
-            api_request_str = os.getenv('API_KEY_REQUEST') + str(user.id)
-            api_request = requests.get(api_request_str)
-            total_info = api_request.json()
-            rs_level = total_info["map"]["rs"]["level"]
-            status = queue_status(rs_queue)
-            print(rs_level, rs_queue)
-            if(rs_level >= rs_queue and add(rs_queue, user)):
-                if(queue_status(rs_queue) < 4):
-                    await reaction.message.channel.send(f'{rs_pings[f"RS{rs_queue}"]} ({queue_status(rs_queue)}/4) {user.mention} joined.')
-                else:
-                    people = print_people(rs_queue, user)
-                    await reaction.message.channel.send(f"RS{rs_queue} Ready! {people[0].mention}, {people[1].mention}, {people[2].mention}, {people[3].mention}")
-                    sql = "DELETE FROM main WHERE level=?"
-                    db = sqlite3.connect('rsqueue.sqlite')
-                    cursor = db.cursor()
-                    cursor.execute(sql, [(rs_queue)])
-                    db.commit()
-                    cursor.close()
-                    db.close()
-            else:
-                if(rs_level >= rs_queue):
-                    await reaction.message.channel.send(f"{user.mention} you are already in a RS Queue, use !rs o to leave the queue")
-                else:
-                    await reaction.message.channel.send(f"{user.mention} your current RS level is {rs_level}, you can't join a RS{rs_queue} queue 😡")
-        elif(emoji == "🔟"):
-            rs_queue = 10
-            load_dotenv()
-            api_request_str = os.getenv('API_KEY_REQUEST') + str(user.id)
-            api_request = requests.get(api_request_str)
-            total_info = api_request.json()
-            rs_level = total_info["map"]["rs"]["level"]
-            status = queue_status(rs_queue)
-            print(rs_level, rs_queue)
-            if(rs_level >= rs_queue and add(rs_queue, user)):
-                if(queue_status(rs_queue) < 4):
-                    await reaction.message.channel.send(f'{rs_pings[f"RS{rs_queue}"]} ({queue_status(rs_queue)}/4) {user.mention} joined.')
-                else:
-                    people = print_people(rs_queue, user)
-                    await reaction.message.channel.send(f"RS{rs_queue} Ready! {people[0].mention}, {people[1].mention}, {people[2].mention}, {people[3].mention}")
-                    sql = "DELETE FROM main WHERE level=?"
-                    db = sqlite3.connect('rsqueue.sqlite')
-                    cursor = db.cursor()
-                    cursor.execute(sql, [(rs_queue)])
-                    db.commit()
-                    cursor.close()
-                    db.close()
-            else:
-                if(rs_level >= rs_queue):
-                    await reaction.message.channel.send(f"{user.mention} you are already in a RS Queue, use !rs o to leave the queue")
-                else:
-                    await reaction.message.channel.send(f"{user.mention} your current RS level is {rs_level}, you can't join a RS{rs_queue} queue 😡")
+                sql = "DELETE FROM main WHERE nickname=?"
+                cursor.execute(sql, [(user.display_name)])
+                await reaction.message.channel.send("You have been removed from the rs queue")
+            db.commit()
+            cursor.close()
+            db.close()
+
 
 
 
