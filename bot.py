@@ -144,7 +144,7 @@ async def on_reaction_add(reaction, user):
 
 
 
-intital_extensions = ['cogs.moderation', 'cogs.ws_planning', 'cogs.poll', 'cogs.medals', 'cogs.results', 'cogs.redstars']
+intital_extensions = ['cogs.ws_planning', 'cogs.poll', 'cogs.medals', 'cogs.results', 'cogs.redstars']
 
 if __name__ == '__main__':
     for extension in intital_extensions:
