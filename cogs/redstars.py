@@ -104,7 +104,7 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                             "RS10" : "<@&795056815091089409>",
                             "TEST" : "<@&795056080123330610>"
                         }   
-                        await ctx.send(f'{rs_pings["TEST"]} ({count}/4) {ctx.author.mention} joined.')
+                        await ctx.send(f'{rs_pings[f"RS{level}"]} ({count}/4) {ctx.author.mention} joined.')
                     else:
                         await ctx.send(f"RS{level} Ready! {people_mention[0].mention} {people_mention[1].mention} {people_mention[2].mention} {people_mention[3].mention}")
                         sql = "DELETE FROM main WHERE level=?"
