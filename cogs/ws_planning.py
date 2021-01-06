@@ -77,9 +77,9 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
 
 
     @commands.command(help="Add a user with this command")
-    async def add(self, ctx, name, roster=None):
-        if roster == None:
-            roster = '1'
+    async def add(self, ctx, *name):
+        roster = name[-1] if name[-1].isnumeric() else 1
+        name = " ".join(name[:-1])
         if (roster == '1') or (roster == '2'):
             nicknames = []
             names = []
