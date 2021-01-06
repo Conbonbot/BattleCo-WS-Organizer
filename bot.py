@@ -113,9 +113,9 @@ async def on_reaction_add(reaction, user):
                 else:
                     people = print_people(rs_queue, user)
                     await reaction.message.channel.send(f"RS{rs_queue} Ready! {people[0].mention}, {people[1].mention}, {people[2].mention}, {people[3].mention}")
-                    sql = "DELETE FROM main WHERE level=?"
                     db = sqlite3.connect('rsqueue.sqlite')
                     cursor = db.cursor()
+                    sql = "DELETE FROM main WHERE level=?"
                     cursor.execute(sql, [(rs_queue)])
                     db.commit()
                     cursor.close()
@@ -128,7 +128,7 @@ async def on_reaction_add(reaction, user):
         elif(rs_queue == -1): # Remove them from any queues
             db = sqlite3.connect('rsqueue.sqlite')
             cursor = db.cursor()
-            sql = "SELECT nickname FROM main WHERE nickname=?"
+            sql = "SELECT level FROM main WHERE nickname=?"
             cursor.execute(sql, [(user.display_name)])
             result = cursor.fetchall()
             if len(result) == 0: 
@@ -136,7 +136,14 @@ async def on_reaction_add(reaction, user):
             else:
                 sql = "DELETE FROM main WHERE nickname=?"
                 cursor.execute(sql, [(user.display_name)])
-                await reaction.message.channel.send("You have been removed from the rs queue")
+                sql = "SELECT level FROM main WHERE level=?"
+                cursor.execute(sql, [(result[0][0])])
+                people = cursor.fetchall()
+                try:
+                    count = len(people[0])
+                except:
+                    count = 0
+                await reaction.message.channel.send(f"{user.mention} has left RS{result[0][0]} ({count}/4)")
             db.commit()
             cursor.close()
             db.close()

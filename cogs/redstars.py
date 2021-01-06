@@ -104,7 +104,7 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                             "RS10" : "<@&795056815091089409>",
                             "TEST" : "<@&795056080123330610>"
                         }   
-                        await ctx.send(f'{rs_pings[f"RS{rs_level}"]} ({count}/4) {ctx.author.mention} joined.')
+                        await ctx.send(f'{rs_pings["TEST"]} ({count}/4) {ctx.author.mention} joined.')
                     else:
                         await ctx.send(f"RS{level} Ready! {people_mention[0].mention} {people_mention[1].mention} {people_mention[2].mention} {people_mention[3].mention}")
                         sql = "DELETE FROM main WHERE level=?"
@@ -118,15 +118,24 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
             if(level == "o" or level == "out"):
                 db = sqlite3.connect('rsqueue.sqlite')
                 cursor = db.cursor()
-                sql = "SELECT nickname FROM main WHERE nickname=?"
+                sql = "SELECT level FROM main WHERE nickname=?"
                 cursor.execute(sql, [(ctx.author.display_name)])
                 result = cursor.fetchall()
+                print(result[0])
+                print(result[0][0])
                 if len(result) == 0: 
                     await ctx.send("You are not in any rosters, use !rs or !q to join a roster")
                 else:
                     sql = "DELETE FROM main WHERE nickname=?"
                     cursor.execute(sql, [(ctx.author.display_name)])
-                    await ctx.send("You have been removed from the rs queue")
+                    sql = "SELECT level FROM main WHERE level=?"
+                    cursor.execute(sql, [(result[0][0])])
+                    people = cursor.fetchall()
+                    try:
+                        count = len(people[0])
+                    except:
+                        count = 0
+                    await ctx.send(f"{ctx.author.mention} has left RS{result[0][0]} ({count}/4)")
                 db.commit()
                 cursor.close()
                 db.close()
