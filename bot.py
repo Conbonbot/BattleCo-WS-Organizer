@@ -10,6 +10,7 @@ import sys
 import requests
 import numpy as np
 from discord.utils import get
+import time
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -30,7 +31,7 @@ async def on_ready():
             level INTEGER
         )
     ''')
-    #addColumn = "ALTER TABLE main ADD COLUMN relics TEXT"
+    #addColumn = "ALTER TABLE main ADD COLUMN time INTEGER"
     #cursor.execute(addColumn)
     print(f'{bot.user.name} has connected to Discord!')
     return await bot.change_presence(activity=discord.Activity(type=1, name="BattleCo"))
@@ -51,8 +52,8 @@ def add(queue, user):
     cursor.execute(sql, [(user.display_name)])
     result = cursor.fetchall()
     if len(result) == 0: # Person wasn't found in database, add them to the rs queue
-        sql = "INSERT INTO main(user_id, nickname, level) VALUES(?,?,?)"
-        val = (user.id, user.display_name, queue)
+        sql = "INSERT INTO main(time, user_id, nickname, level) VALUES(?,?,?,?)"
+        val = (int(time.time()), user.id, user.display_name, queue)
         cursor.execute(sql, val)
         db.commit()
         cursor.close()
@@ -147,6 +148,7 @@ async def on_reaction_add(reaction, user):
             db.commit()
             cursor.close()
             db.close()
+        await reaction.message.remove_reaction(reaction, user)
 
 
 

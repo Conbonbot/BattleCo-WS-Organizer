@@ -4,19 +4,95 @@ from discord import user
 from dotenv import load_dotenv
 import sqlite3
 import datetime
-from discord.ext import commands
+from discord.ext import commands, tasks
 import discord
 import requests
 import asyncio
 import numpy as np
 from discord.utils import get
 from discord import client
+import time
 
 class BattleCoWSCogs(commands.Cog, name='BattleCo'):
 
 
     def __init__(self, bot):
         self.bot = bot
+        self.index = 0
+        self.check_people.start()
+
+
+    # This executes an sql command to a database
+    def sql_command(self, sql, val, data='rsqueue.sqlite'):
+        db = sqlite3.connect(data)
+        cursor = db.cursor()
+        cursor.execute(sql, val)
+        results = cursor.fetchall()
+        db.commit()
+        cursor.close()
+        db.close()
+        return results
+    
+    # This returns how many minutes a person has been in a queue
+    def time(self, user_id, level):
+        print(f"Running the time command. User ID: {user_id}, level: {level}")
+        db = sqlite3.connect("rsqueue.sqlite")
+        cursor = db.cursor()
+        sql = "SELECT time FROM main WHERE user_id=? AND level=?"
+        val = (user_id, level)
+        cursor.execute(sql, val)
+        person = cursor.fetchone()
+        db.commit()
+        cursor.close()
+        db.close()
+        print("Results from the database: ", person)
+        for p in person:
+            return int((time.time() - int(p))/60)
+
+    # This returns how many people are in a current RS queue
+    def amount(self, level):
+        people = self.sql_command("SELECT amount FROM main WHERE level=?", [(level)])
+        count = 0
+        counting = []
+        for person in people:
+            counting.append(person[0])
+            count += int(person[0])
+        return count
+
+
+    def cog_unload(self):
+        self.check_people.cancel()
+
+    @tasks.loop(minutes=1.0)
+    async def check_people(self):
+        # This command will run every minute, and check if someone has been in a queue for over n minutes
+        db = sqlite3.connect('rsqueue.sqlite')
+        cursor = db.cursor()
+        cursor.execute("SELECT time, user_id, level FROM main")
+        times = cursor.fetchall()
+        for queue_time in times:
+            #print(queue_time)
+            #print(int(time.time()), queue_time[0], int(time.time())-queue_time[0], int((time.time()-queue_time[0])/60))
+            minutes = int((time.time()-queue_time[0])/60)
+            if(minutes == 60):
+                # Ping the user
+                user = await self.bot.fetch_user(queue_time[1])
+                await channel.send(f"{user.mention}, still in for a RS{queue_time[2]}? Type !yes {queue_time[2]} to stay in the queue")
+                pass
+            elif(minutes == 60+3):
+                self.sql_command("DELETE FROM main WHERE user_id=? AND level=?", (queue_time[1], queue_time[2]))
+                user = await self.bot.fetch_user(queue_time[2])
+                channel = await self.bot.fetch_channel(queue_time[4])
+                await channel.send(f"{user.mention} has left RS{queue_time[2]} ({self.amount(queue_time[2])}/4)")
+                pass
+        db.commit()
+        cursor.close()
+        db.close()
+
+    @commands.command(aliases=["yes", "y"])
+    async def confirm(self, ctx, level):
+        self.sql_command("UPDATE main SET time=? WHERE user_id=? AND level=?", (int(time.time()), ctx.author.id, level))
+        await ctx.send(f"{ctx.author.mention}, you are requed for a RS{level}! ({self.amount(level)}/4)")
 
     @commands.command(help="Use this command to join a rs queue by either typing in !rs to join your current rs level or !rs # to join a specific rs queue, and use !rs out or !rs o to leave a queue")
     async def rs(self, ctx, level=None):
@@ -34,8 +110,8 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
             cursor.execute(sql, [(ctx.author.display_name)])
             result = cursor.fetchall()
             if len(result) == 0: # Person wasn't found in database, add them to the rs queue
-                sql = "INSERT INTO main(user_id, nickname, level) VALUES(?,?,?)"
-                val = (ctx.author.id, ctx.author.display_name, rs_level)
+                sql = "INSERT INTO main(time, user_id, nickname, level) VALUES(?,?,?,?)"
+                val = (int(time.time()), ctx.author.id, ctx.author.display_name, rs_level)
                 cursor.execute(sql, val)
                 # print out the RS Queue
                 sql = "SELECT user_id FROM main WHERE level=?"
@@ -83,8 +159,8 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
                 cursor.execute(sql, [(ctx.author.display_name)])
                 result = cursor.fetchall()
                 if len(result) == 0: # They weren't found on any RS Queues, add them
-                    sql = "INSERT INTO main(user_id, nickname, level) VALUES(?,?,?)"
-                    val = (ctx.author.id, ctx.author.display_name, level)
+                    sql = "INSERT INTO main(time, user_id, nickname, level) VALUES(?,?,?,?)"
+                    val = (int(time.time()), ctx.author.id, ctx.author.display_name, level)
                     cursor.execute(sql, val)
                     # print out the RS Queue
                     sql = "SELECT user_id FROM main WHERE level=?"
@@ -194,14 +270,20 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         )
         # Gets RS6-10 Queue data
         for level in range(6,11):
-            sql = "SELECT nickname FROM main WHERE level=?"
+            sql = "SELECT nickname, user_id FROM main WHERE level=?"
             cursor.execute(sql, [(level)])
             people = cursor.fetchall()
             count = 0
             list_people = []
+            user_ids = []
             for person in people:
+                print(person)
                 list_people.append(person[0])
-            str_person = ", ".join(list_people)
+                user_ids.append((await ctx.guild.fetch_member(person[1])).id)
+            str_person = ""
+            for i in range(len(list_people)):
+                str_person += list_people[i] + " 🕒 " + str(self.time(user_ids[i], level)) + "m, "
+            str_person = str_person[:-2]
             print(f"RS{level}", str_person, len(list_people))
             if(len(list_people) != 0):
                 queue_embed.add_field(name=f"RS{level} Queue ({len(list_people)}/4)", value=str_person, inline=False)
