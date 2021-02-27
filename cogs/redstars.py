@@ -65,24 +65,28 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
 
     @tasks.loop(minutes=1.0)
     async def check_people(self):
+        print("AHHHH")
         # This command will run every minute, and check if someone has been in a queue for over n minutes
         db = sqlite3.connect('rsqueue.sqlite')
         cursor = db.cursor()
         cursor.execute("SELECT time, user_id, level FROM main")
         times = cursor.fetchall()
+        print(times)
         for queue_time in times:
             #print(queue_time)
             #print(int(time.time()), queue_time[0], int(time.time())-queue_time[0], int((time.time()-queue_time[0])/60))
             minutes = int((time.time()-queue_time[0])/60)
-            if(minutes == 60):
+            print(minutes)
+            if(int(minutes) == 60):
                 # Ping the user
                 user = await self.bot.fetch_user(queue_time[1])
+                channel = await self.bot.fetch_channel(729933561855082586)
                 await channel.send(f"{user.mention}, still in for a RS{queue_time[2]}? Type !yes {queue_time[2]} to stay in the queue")
                 pass
-            elif(minutes == 60+3):
+            elif(int(minutes) >= 60+3):
                 self.sql_command("DELETE FROM main WHERE user_id=? AND level=?", (queue_time[1], queue_time[2]))
-                user = await self.bot.fetch_user(queue_time[2])
-                channel = await self.bot.fetch_channel(queue_time[4])
+                user = await self.bot.fetch_user(queue_time[1])
+                channel = await self.bot.fetch_channel(542358024669495316)
                 await channel.send(f"{user.mention} has left RS{queue_time[2]} ({self.amount(queue_time[2])}/4)")
                 pass
         db.commit()
