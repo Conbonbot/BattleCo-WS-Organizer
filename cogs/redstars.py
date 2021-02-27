@@ -80,7 +80,7 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
             if(int(minutes) == 60):
                 # Ping the user
                 user = await self.bot.fetch_user(queue_time[1])
-                channel = await self.bot.fetch_channel(729933561855082586)
+                channel = await self.bot.fetch_channel(542358024669495316)
                 await channel.send(f"{user.mention}, still in for a RS{queue_time[2]}? Type !yes {queue_time[2]} to stay in the queue")
                 pass
             elif(int(minutes) >= 60+3):
