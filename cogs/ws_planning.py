@@ -263,6 +263,11 @@ class BattleCoWSCogs(commands.Cog, name='BattleCo'):
         for ms in msg:
             await ms.delete()
 
+    @commands.command()
+    @commands.has_role("Officer")
+    async def clear(self, ctx, limit: int):
+        await ctx.channel.purge(limit=limit)
+
     @commands.command(help="Use this command to clear the WS Queue, to start the WS")
     async def start(self, ctx, message, confirm=None):
         msg = []
